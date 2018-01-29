@@ -1,0 +1,196 @@
+body
+{
+	text-align: center;
+	cursor: default;
+}
+
+h1
+{
+	background-color: rgba(0,54,103, 1);
+	margin:0;
+	padding: 0.2em;
+	color: white;
+}
+
+.menu
+{
+	background-color: rgba(208,215,0, 1);
+	color: rgba(0,54,103, 1);
+}
+
+.menu div.row > div
+{
+/* ??? */
+}
+
+#zone_drop_barre, #canvas_defo
+{
+	box-sizing: content-box;
+	border: solid black 2px;
+}
+
+#zone_drop_barre, #barre, #canvas_defo
+{
+	/* Centrage */
+	/* TODO ne marchera pas dans Internet Explorer */
+	left: 0; right: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#zone_drop_barre
+{
+	position: absolute;
+
+	z-index: 10;
+
+	line-height: 0; font-size: 0;
+
+	/*background-color: rgba(0,128,255,0.3);*/
+	border-bottom: 0px; /* permet une juxtaposition des cadres plus propre : pas de trait double épaisseur */
+}
+
+.frozen
+{
+	background-color: rgb(255,240,240);
+}
+
+#barre
+{
+	position: absolute;
+	display: inline-block;
+
+	top: 50%;
+
+	background-color: black;
+	opacity: 0.1;
+	height: 2px;
+}
+
+#canvas_defo
+{
+	position: relative;
+
+	z-index: 5;
+	
+	pointer-events: none; /* jamais d'interaction avec le curseur (pas de clic) */
+
+	/*background-color: rgba(0,0,0,0.3);*/
+}
+
+/* ================= Liaisons ================= */
+
+.cl_distributeur, .cl_instance
+{
+	background-color: gray;
+	display: inline-block;
+
+	width: 15px;
+	height: 20px;
+
+	cursor: move;
+}
+
+.cl_instance
+{
+	position: absolute;
+	top: 50%;
+}
+
+
+
+#cl_distri_appui, .cl_appui
+{
+	/*background-color: red;*/
+	background: url("../img/cl_appui.png") no-repeat;
+	transform: translate(-5px, 0);
+}
+
+#cl_distri_pivot, .cl_pivot
+{
+	/*background-color: green;*/
+	background: url("../img/cl_pivot.png") no-repeat;
+	transform: translate(0, -5px);
+}
+
+#cl_distri_encastrement, .cl_encastrement
+{
+	/*background-color: blue;*/
+	background: url("../img/cl_encastrement.png") no-repeat;
+}
+
+
+/* Décalage */
+.cl_pivot
+{
+	transform: translate(-7px, -6px);
+}
+
+.cl_encastrement
+{
+	transform: translate(-5px, -10px);
+}
+
+
+/* ================= Chargements ================= */
+
+.ch_distributeur, .ch_instance
+{
+	background-color: gray;
+	display: inline-block;
+
+	background-image: url(../img/arrow_head_up.png) , url(../img/arrow_body.png);
+	background-position: left top, left top;
+	background-repeat: no-repeat, repeat-y;
+
+	width: 15px;
+	height: 40px;
+
+	cursor: move;
+}
+
+.ch_instance
+{
+	position: absolute;
+	bottom: 50%;
+	height: 25%;
+}
+
+
+
+#ch_distri_f_c, .ch_f_c
+{
+	background-color: yellow;
+}
+
+#ch_distri_f_r, .ch_f_r
+{
+	background-color: rgba(255,128,128,0.8);
+	background-repeat: repeat-x, repeat;
+}
+
+#ch_distri_m_c, .ch_m_c
+{
+	background-color: purple;
+}
+
+#ch_distri_m_r, .ch_m_r
+{
+	background-color: rgba(0,255,0,0.8);
+	background-repeat: repeat-x, repeat;
+}
+
+
+
+
+/* jQuery */
+
+.ui-resizable-handle.ui-resizable-e, .ui-resizable-handle.ui-resizable-w
+{
+	width: 10px;
+}
+
+.ui-resizable-handle.ui-resizable-n
+{
+	height: 10px;
+}

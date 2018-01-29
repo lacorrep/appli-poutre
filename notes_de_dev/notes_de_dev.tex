@@ -1,0 +1,209 @@
+% Temps passé sur la rédaction
+% 04/07/2017 : 1H
+
+\documentclass[draft]{report}
+
+% Package personnalisé
+\usepackage{myPackage}
+
+\title{Appli Poutres - Notes de développement}
+\author{Paul \textsc{Lacorre}}
+\date{Juin 2017}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Modélisation physique}
+
+\section{Hypothèses}
+\begin{itemize}
+\item Poutre isostatique (vérifié avant chaque résolution)
+\item Petites déformations (la déformation n'induit pas de nouveaux efforts internes)
+\item Sections droites (indéformables)
+\item Poutres d'Euler-Bernoulli : les sections restent perpendiculaires à la ligne moyenne \todo{(la rotation de la section est identique à la pente de la déformée)}
+\end{itemize}
+
+\section{Équations du problème}
+
+Les équations à résoudre sont~:
+\begin{systeme}
+\der{u}{x} &= \dfrac{1}{ES} N(x) \\
+\\
+\dfrac{\mathrm{d}^2 v}{\mathrm{d}x^2} &= \dfrac{1}{EI} M(x) \\
+\end{systeme}
+On doit avoir 1 CL sur $u$ et 2 CL sur $v$.
+
+Les deux problèmes sont clairement découplés.
+
+\subsection{Calcul des efforts internes $N$ et $M$}
+
+\todo{méthode de la coupure}
+
+\subsection{Calcul des déplacements horizontaux $u$}
+On intègre la première équation entre $0$ et $x$~:
+\[ u(x) = u(0) + \int_0^x \dfrac{1}{ES} N(x) \intd x \]
+Cependant $u(0)$ n'est pas forcément connu.
+
+On pose
+\[ U(x) = \int_0^x \dfrac{1}{ES} N(x) \intd x \]
+ce qui est la solution lorsque $u(0) = 0$.
+
+Via les données saisies par l'utilisateur, on connaît la position $x_0$ de la liaison qui empêche le déplacement horizontal. On impose alors de manière forte $u(x_0) = 0$~:
+
+\important{ u(x) = U(x) - U(x_0) }
+
+\subsection{Calcul des déplacements verticaux $v$}
+
+\todo[inline]{à faire}
+% WIP
+Via les données saisies par l'utilisateur, on connaît les positions $x_i$ de la ou des liaisons qui empêchent le déplacement vertical. On impose alors cette condition de manière forte.
+
+Si on a une seule liaison en $x_1$~: la solution est définie à une constante près
+\important{ v(x) = V(x) - V(x_1) }
+
+Si on a deux liaisons en $x_1$ et $x_2$~: la solution est définie à un polynôme près. On pose
+\[ \alpha = \dfrac{ V(x_2)-V(x_1) }{ x_2-x_1 } \]
+\important{ v(x) = V(x) - \Big( \alpha \times (x - x_1) + V(x_1) \Big) }
+
+% FIN WIP
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Implémentation}
+
+\section{Affichage de la poutre}
+
+\todo{parler de la marge sur les côtés pour afficher la déformée}
+
+\section{Discrétisation des équations d'équilibre local}
+
+On prend autant de points que la poutre fait de pixels à l'écran.
+
+\section{Détermination des efforts d'appui}
+
+On note $\vec R$, $M$ les réactions des liaisons et $\vec F$, $C$ les chargements. Le PFS donne~:
+
+\begin{systeme}
+\vec R + \vec F =& \vec 0 \\
+M + C =& 0 \\
+\end{systeme}
+\begin{systeme}
+R_X =& - F_X \\
+R_Y =& - F_Y \\
+M =& - C \\
+\end{systeme}
+
+L'unique CL sur $u$ est introduite par un unique effort horizontal $R_X$. Les deux CL sur $v$ et ses dérivées peuvent être appliquées par un effort vertical $R_Y$ et par un autre effort vertical $R_Y'$ ou un moment $M$.
+
+\[ \Rightarrow
+\begin{bmatrix}
+\dots & \dots & \dots \\
+\dots & \dots & \dots \\
+\dots & \dots & \dots \\
+\end{bmatrix}
+\begin{bmatrix}
+R_X \\
+R_Y \\
+R_Y' \text{ ou } M
+\end{bmatrix}
+=
+\begin{bmatrix}
+- \sum F_X \\
+- \sum F_Y \\
+- \sum C \\
+\end{bmatrix} \]
+
+Les efforts horizontaux ne génèrent pas de moments sur la poutre. Ainsi l'équilibre horizontal ne dépend que des efforts horizontaux. Il n'y a qu'une seule force de réaction horizontale.
+\important{ R_X = - \sum F_X }
+
+Pour déterminer les autres efforts, on résout le système suivant par la méthode de Cramer~:
+\important{ \begin{bmatrix}
+\dots & \dots \\
+\dots & \dots \\
+\end{bmatrix}
+\begin{bmatrix}
+R_Y \\
+R_Y' \text{ ou } M
+\end{bmatrix}
+=
+\begin{bmatrix}
+- \sum F_Y \\
+- \sum C \\
+\end{bmatrix}  }
+
+Sur la première ligne, $j$-ième colonne~: on a $1$ si la $j$-ième inconnue est une force, $0$ si c'est un moment.
+
+Sur la deuxième ligne, $j$-ième colonne~: on a $x$ la distance de la force à l'extrémité gauche de la poutre si la $j$-ième inconnue est une force, $1$ si c'est un moment.
+
+\paragraph{Exemples} pour une poutre bi-appuyée (en $x$ et $x'$)~:
+\[ \begin{bmatrix}
+1 & 1 \\
+x & x' \\
+\end{bmatrix}
+\begin{bmatrix}
+R_Y \\
+R_Y'
+\end{bmatrix}\]
+pour une poutre encastrée (en $x$)~:
+\[ \begin{bmatrix}
+1 & 0 \\
+x & 1 \\
+\end{bmatrix} 
+\begin{bmatrix}
+R_Y \\
+M
+\end{bmatrix}\]
+
+\paragraph{Résolution}
+
+\important{
+[A] \{R\} = \{F\}
+\Leftrightarrow
+ \begin{bmatrix}
+a_{00} & a_{01} \\
+a_{10} &a_{11} \\
+\end{bmatrix}
+\begin{bmatrix}
+R1 \\
+R2
+\end{bmatrix}
+=
+\begin{bmatrix}
+- \sum F_Y \\
+- \sum C \\
+\end{bmatrix} 
+}
+
+\[ R1 = \dfrac{ a_{01} \times \sum C - a_{11} \times \sum F_Y }{\det A} \]
+\[ R2 = \dfrac{ a_{10} \times \sum F_Y - a_{00} \times \sum C }{\det A} \]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Bibliothèques et dépendances}
+
+\noindent
+\begin{tabularx}{\textwidth}{llXl}
+Nom & Version & Utilité & Source \\
+\hline\\
+jQuery & 3.2.1 & Permet de manipuler facilement le DOM. & jquery.com \\
+jQuery UI & 1.12.1 & Permet de définir rapidement des composants d'interface (drag and drop, redimensionnement) & jqueryui.com \\
+Touch Punch & 0.2.3 & Assure la compatibilité de jQuery UI avec les événements tactiles. & touchpunch.furf.com \\
+Bootstrap & 3.3.7 & Framework d'interface et responsive design. & getbootstrap.com \\
+\end{tabularx}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Extensions possibles}
+
+\begin{itemize}
+\item Traction / compression
+\item Poutres hyperstatiques
+\item Vibrations
+\end{itemize}
+
+\end{document}

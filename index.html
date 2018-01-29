@@ -1,0 +1,121 @@
+<!-- Temps :
+28/06/2017 4H
+30/06/2017 1H
+02/07/2017 1H
+03/07/2017 2H
+04/07/2017 3H
+09/07/2017 3H
+?
+25/07/2017 3H
+27/07/2017 1H
+24/08/2017 4H
+20/09/2017 1H30
+26/12/2017 1H
+-->
+
+<!-- TODO : laisser la possibilité de fixer l'échelle ou pas -->
+
+<!-- http://howtocenterincss.com/ -->
+<!-- http://phrogz.net/CSS/vertical-align/index.html -->
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<title>Poutres d'Euler-Bernoulli</title>
+	<meta charset="utf-8">
+
+	<!-- jQuery -->
+	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+	<link rel="stylesheet" href="css/jquery-ui.min.css">
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- CSS spécifique -->
+	<link rel="stylesheet" href="css/style1.css">
+
+	<!-- Javascript spécifique -->
+	<script type="text/javascript" src="js/array_math.js"></script>
+	<script type="text/javascript" src="js/gui.js"></script>
+	<script type="text/javascript" src="js/rdm.js"></script>
+	<script type="text/javascript" src="js/control.js"></script>
+</head>
+<body>
+	<h1>RDM</h1>
+
+	<div id="menuLiaisons" class="container-fluid menu">
+		<h3>Liaisons</h3>
+		<div class="row">
+			<div class="col-xs-4">
+				<h4>Appui</h4>
+				<!-- <img src="" alt="Appui"> -->
+				<span id="cl_distri_appui" class="cl_distributeur"></span>
+				<p class="small">Bloque 1 <ddl></ddl> de translation</p>
+			</div>
+			<div class="col-xs-4">
+				<h4>Pivot</h4>
+				<!-- <img src="" alt="Pivot"> -->
+				<span id="cl_distri_pivot" class="cl_distributeur"></span>
+				<p class="small">Bloque 2 <ddl></ddl> de translation</p>
+			</div>
+			<div class="col-xs-4">
+				<h4>Encastrement</h4>
+				<!-- <img src="" alt="Encastrement"> -->
+				<span id="cl_distri_encastrement" class="cl_distributeur"></span>
+				<p class="small">Bloque 2 <ddl></ddl> de translation et 1 <ddl></ddl> de rotation</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="menuChargements" class="container-fluid menu">
+		<h3>Chargements</h3>
+		<div class="row">
+			<div class="col-xs-3">
+				<h4>Force concentrée</h4>
+				<!-- <img src="img/" alt="Force concentrée"> -->
+				<span id="ch_distri_f_c" class="ch_distributeur"></span>
+			</div>
+			<div class="col-xs-3">
+				<h4>Force répartie</h4>
+				<!-- <img src="img/" alt="Force répartie"> -->
+				<span id="ch_distri_f_r" class="ch_distributeur"></span>
+			</div>
+			<div class="col-xs-3">
+				<h4>Moment concentré</h4>
+				<!-- <img src="img/" alt="Moment concentré"> -->
+				<span id="ch_distri_m_c" class="ch_distributeur"></span>
+			</div>
+			<div class="col-xs-3">
+				<h4>Moment réparti</h4>
+				<!-- <img src="img/" alt="Moment réparti"> -->
+				<span id="ch_distri_m_r" class="ch_distributeur"></span>
+			</div>
+		</div>
+	</div>
+
+	<div id="debug-tools" class="container-fluid" style="background-color: gray; display: none;">
+		<h4>Outils de débugage</h4>
+		<p>La poutre <span id="estIso">n'est pas isostatique</span>.</p>
+		<!-- <button onclick="alert(poutre.isostatique())">Isostatique ?</button> -->
+		<button onclick="poutre.compute_defo(gui.canvas);poutre.dessiner_defo(gui.canvas)">Update, dessiner</button>
+		<button onclick="$('#zone_drop_barre').css('position','absolute')">-</button>
+		<button onclick="$('#zone_drop_barre').css('position','relative')">=</button>
+	</div>
+
+	<div class="container-fluid"><br></div>
+
+	<!-- Configuration initiale, liaisons et chargements -->
+	<div id="zone_drop_barre" class="frozen">
+		<div id="barre"></div>
+		<!-- Les liaisons et les chargements seront insérés ici -->
+	</div>
+
+	<!-- Tracé de la déformée -->
+	<canvas id="canvas_defo">Erreur : balise canvas non supportée par votre navigateur.</canvas>
+
+
+</body>
+</html>

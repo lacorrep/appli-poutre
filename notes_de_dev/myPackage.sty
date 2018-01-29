@@ -1,0 +1,153 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{myPackage}
+
+
+
+%% Gestion de la langue
+
+% Encodage
+\RequirePackage[francais]{babel}
+% Encodage du fichier source
+\RequirePackage[utf8]{inputenc}
+% Police du fichier sortie
+\RequirePackage[T1]{fontenc}
+
+
+
+%% Mise en page
+
+% Hyperliens
+\RequirePackage{hyperref}
+% Écriture sur plusieurs colonnes
+\RequirePackage{multicol}
+% Annexe
+\RequirePackage[toc,page]{appendix} % \begin{appendices}
+
+% Gestion des couleurs
+\RequirePackage{xcolor}
+% Gestion des couleurs dans les tableaux
+\RequirePackage{colortbl}
+% Gestion de fichiers image
+\RequirePackage{graphicx}
+% Gestion du placement des images
+\RequirePackage{float} % \begin{figure}[H] pour forcer HERE
+% Figures incrustées à côté du texte
+\RequirePackage{wrapfig} % \begin{wrapfigure}{r}{0.35\textwidth}
+% Insertion de pages PDF
+\RequirePackage{pdfpages} % \includepdf[pages={1}]{filename.pdf}
+% Options de personnalisation des puces dans les listes
+\RequirePackage{enumerate}
+% Cadres colorés
+\RequirePackage{mdframed}
+% Choses à faire
+\RequirePackage[obeyDraft]{todonotes}
+% Unités
+\RequirePackage[squaren,Gray]{SIunits}
+%\RequirePackage{sistyle} % \SI{10}{m/s^2}
+% Annuler
+\RequirePackage{cancel}
+% Tableaux intelligents
+\RequirePackage{tabularx}
+
+% Maths
+\RequirePackage{mathtools}
+\RequirePackage{amssymb}
+
+% Tikz (en dernier)
+\RequirePackage{tikz}
+
+
+
+%% Style
+
+% Marges
+\RequirePackage[a4paper,margin=2cm]{geometry}
+
+% Police
+% bch ppl lmss cmss pag phv
+\renewcommand*\rmdefault{bch}
+
+% Reset la numérotation des sections à chaque nouvelle partie
+\makeatletter
+\@addtoreset{section}{part}
+\makeatother
+
+% Itemize : les tirets deviennent des points (- •)
+\renewcommand{\labelitemi}{\textbullet}
+
+% Liens
+\colorlet{hypersetup_linkcolor}{red!80!yellow!18!black}
+\colorlet{hypersetup_citecolor}{green!40!blue!50!black}
+\colorlet{hypersetup_urlcolor}{blue!80!cyan!40!black}
+\hypersetup{
+	colorlinks,
+	linkcolor=hypersetup_linkcolor,
+	citecolor=hypersetup_citecolor,
+	urlcolor=hypersetup_urlcolor
+}
+
+
+
+
+%% Macros
+
+% Calcul différentiel
+\newcommand{\der}[2]{\dfrac{\mathrm d #1}{\mathrm d #2}} % dérivée totale quelconque
+\newcommand{\dert}[1]{\dfrac{\mathrm d #1}{\mathrm dt}} % dérivée totale par rapport temps
+\newcommand{\derp}[2]{\dfrac{\partial #1}{\partial #2}} % dérivée partielle quelconque
+\newcommand{\derpt}[1]{\dfrac{\partial #1}{\partial t}} % dérivée partielle par rapport au temps
+\newcommand{\derpx}[1]{\dfrac{\partial #1}{\partial x}} % dérivée partielle par rapport à x
+\newcommand{\Laplace}[1]{\mathcal L\left\{#1\right\}} % transformation de Laplace
+% Ensembles
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+% Complexes
+\renewcommand{\arg}{\mathrm{arg} \,}
+\renewcommand{\Re}{\mathrm{Re} \,}
+\renewcommand{\Im}{\mathrm{Im} \,}
+% Vecteurs et matrices
+\newcommand{\lvec}[1]{\overrightarrow{#1}} % vecteur long
+\newcommand{\vvec}[2]{\left( \, \begin{matrix} #1 \\ #2 \end{matrix} \, \right)} % vecteur colonne à 2 composantes
+\newcommand{\vvvec}[3]{\left( \, \begin{matrix} #1 \\ #2 \\ #3 \end{matrix} \, \right)} % vecteur colonne à 3 composantes
+\newcommand{\Tr}{\operatorname{Tr} \,} % trace
+% Opérateurs différentiels
+\newcommand{\grad}{\overrightarrow{\operatorname{grad}}\,} % gradient
+\renewcommand{\div}{\operatorname{div}} % divergence ; supplante le symbole division
+\newcommand{\rot}{\overrightarrow{\operatorname{rot}}\,} % rotationnel
+\newcommand{\intd}{\, \mathrm d} % d infinitésimal
+\newcommand{\tensograd}{\overline{\overline{\operatorname{grad}}} \,} % tenseur gradient
+\newcommand{\vecdiv}{\overrightarrow{\operatorname{div}} \, } % divergence vectorielle
+% Mécanique
+\newcommand{\observation}[2]{ (\mathcal #1 / \mathcal #2 ) } % observation de S par rapport à R
+\newcommand{\tens}[1]{\bar{\bar{ #1 }}} % tenseur
+\newcommand{\stress}{\tens \sigma} % tenseur des contraintes
+\newcommand{\strain}{\tens\varepsilon} % tenseur des déformations
+% Mécanique des fluides
+\newcommand{\domain}{\mathcal{D}} % domaine 3D
+\newcommand{\dermat}[1]{\dfrac{\mathrm D #1}{\mathrm Dt}} % dérivée matérielle
+% Autre
+\newcommand{\explication}[2]{\underset{\hbox{#1}}{\underbrace{#2}}} % info avec accolade (explication, formule)
+\newcommand{\unite}[1]{{\color{colVertUnite}{\mathrm{#1}}}} % écrire une unité en vert
+\newcommand{\important}[1]{ {\large \[\boxed{\ #1\ }\]} } % encadrer un résultat important
+\newcommand{\h}[1]{ \colorbox{colSurligner}{$#1$} } % surligner (highlight) si on enlève les $$, il y a des marges
+\newcommand{\red}[1]{ \textcolor{red}{#1} } % écrire en rouge
+\newcommand{\blue}[1]{ \textcolor{blue}{#1} } % écrire en bleu
+\newcommand{\importantRouge}[1]{{\Large \[ \fcolorbox{black}{colImportant}{\boxed{ #1 }} \]}} % encadrer un résultat important avec un fond de couleur
+
+% système d'équations avec accolade
+\newenvironment{systeme}{\[\left\{\begin{array}{rl} }{ \end{array}\right.\]}
+
+% Environnements perso
+\newtheorem{definition}{Définition}
+\newenvironment{calculs}
+{
+\begin{center}
+\[
+\begin{array}{rcl}
+}
+{
+\end{array}
+\]
+\end{center}
+}
