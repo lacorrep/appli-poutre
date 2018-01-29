@@ -1,9 +1,3 @@
-// TODO : gérer les positions x, x0, x1 en pixels correctement (offset avec le bord) !!!
-// TODO : a priori l'attribut objDOM de Liaison et Chargement n'est pas nécessaire, les données de l'interface sont lues mais jamais écrites (pas de contrôle de la vue par rdm.js)
-// TODO : déterminer f1 pour les chargements répartis
-
-// TODO : gérer le problème de flexion indépendamment de la traction/compression si les CL le permettent ?
-
 function Liaison(objDOM, type, axe, position)
 // Objet simple contenant un objet du DOM <objet DOM>,
 // un nom de type <String> et une position <Number en px>

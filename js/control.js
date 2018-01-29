@@ -1,7 +1,3 @@
-// TODO : changement d'axe
-// TODO : resizable: imposer resize_minWidth
-// TODO : liaisons et chargements dessinés en SVG
-
 var poutre = new Poutre();
 
 function debugmode() {

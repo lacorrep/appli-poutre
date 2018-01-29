@@ -2,7 +2,6 @@
 var gui = {};
 
 // Options
-// TODO ces options ne sont pas en option...
 gui.options = {
 	canvas_height: 400, // hauteur du canvas pour la déformée
 	canvas_width: 800, // largeur
