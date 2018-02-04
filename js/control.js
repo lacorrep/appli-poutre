@@ -1,24 +1,25 @@
-// Variable globale
+// Variable poutre globale
 var poutre = new Poutre();
 
-function debugmode() {
+
+function debug() {
 	// Active les outils de débugage
-	$("#debug-tools").css("display","block"); // DEBUG
+	$("#debug-tools").css("display","block");
 }
+
 
 // onDomReady
 $(function(){
 
-// debugmode()
+// Objet DOM Canvas
+glob.canvas = $("#canvas_defo")[0];
+// Mise en forme de la zone de dessin
+$("#canvas_defo").attr({height: glob.param.canvas_height, width: glob.param.canvas_width})
+$("#zone_drop_barre").css({height: glob.param.canvas_height, width: glob.param.canvas_width})
+$("#barre").css({height: glob.param.defo_epaisseur, width: glob.param.canvas_width - 2*glob.param.beam_ends_offset})
 
-gui.canvas = $("#canvas_defo")[0];
-// Mise en forme du canvas
-$("#canvas_defo").attr({height: gui.options.canvas_height, width: gui.options.canvas_width})
-$("#zone_drop_barre").css({height: gui.options.canvas_height, width: gui.options.canvas_width})
-$("#barre").css({height: gui.options.defo_epaisseur, width: gui.options.canvas_width - 2*gui.options.beam_ends_offset})
-
-// Pas de sélection du texte dans les menus
-$(".menu").disableSelection();
+// Pas de sélection du texte dans le titre ou les menus
+$("h1,#menuLiaisons,#menuChargements").disableSelection();
 
 // Explication de ce qu'est un ddl avec la balise abbr
 $("ddl").replaceWith('<abbr title="Degré de liberté">ddl</abbr>')
@@ -28,10 +29,10 @@ $("ddl").replaceWith('<abbr title="Degré de liberté">ddl</abbr>')
 
 $(".cl_distributeur").draggable({
 	snap: ".cl_instance, .cl_instance", // s’accroche aux autres CL
-	snapTolerance: gui.options.snapTol,
+	snapTolerance: glob.param.snapTol,
 	revert: true,
 	revertDuration: 100,
-	opacity: gui.options.drag_opacity,
+	opacity: glob.param.drag_opacity,
 	cursor: "move"
 })
 
@@ -39,10 +40,10 @@ $(".cl_distributeur").draggable({
 
 $(".ch_distributeur").draggable({
 	snap: ".cl_instance, .ch_instance", // s’accroche aux autres CL
-	snapTolerance: gui.options.snapTol,
+	snapTolerance: glob.param.snapTol,
 	revert: true,
 	revertDuration: 100,
-	opacity: gui.options.drag_opacity,
+	opacity: glob.param.drag_opacity,
 	cursor: "move"
 })
 
@@ -58,8 +59,14 @@ $("#zone_drop_barre").droppable({
 		// - une instance rentre ou sort dans la zone (suppression)
 
 		var pos_x = Math.floor( ui.draggable.offset().left - $(this).offset().left );
-		if( pos_x < gui.options.beam_ends_offset ) pos_x = gui.options.beam_ends_offset;
-		if( pos_x > gui.options.canvas_width - gui.options.beam_ends_offset ) pos_x = gui.options.canvas_width - gui.options.beam_ends_offset;
+		if( pos_x < glob.param.beam_ends_offset )
+		{
+			pos_x = glob.param.beam_ends_offset;
+		}
+		if( pos_x > glob.param.canvas_width - glob.param.beam_ends_offset )
+		{
+			pos_x = glob.param.canvas_width - glob.param.beam_ends_offset-3; // TODO décalage arbitraire
+		}
 
 		// Si c'est une instance à déplacer
 
@@ -105,17 +112,19 @@ $("#zone_drop_barre").droppable({
 					// Concentré
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
-					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y", pos_x, 0.25*gui.options*canvas_height); // TODO remplacer 1 par une hauteur de base
+					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
+											  pos_x, 0.25*glob.param.canvas_height*glob.param.force_intensity_scale);
 					break;
 				case "f_r":
 				case "m_r":
 					// Réparti
 					// calculer la largeur de l'élément
-					var hauteur = ui.draggable.height();
 					var largeur = ui.draggable.width();
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
-					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y", pos_x, hauteur, pos_x+largeur, hauteur);
+					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
+											  pos_x, 0.25*glob.param.canvas_height*glob.param.force_intensity_scale,
+											  pos_x+largeur, 0.25*glob.param.canvas_height*glob.param.force_intensity_scale);
 					break;
 				default:
 					alert("Erreur : chargement de type inconnu");
@@ -162,50 +171,53 @@ $("#zone_drop_barre").droppable({
 //  Fonctions
 
 function update_defo()
+// Vérifier l'isostatisme, recalculer la déformée et l'afficher.
 {
 	// Vérifier et afficher l'isostaticité
 	if( poutre.isostatique() )
 	{
 		$("#estIso").html("est");
-		$("#zone_drop_barre").removeClass("frozen");
-		$("#canvas_defo").removeClass("frozen");
+		$("#zone_drop_barre, #canvas_defo").removeClass("frozen");
 		// Calculer la déformée
-		poutre.compute_defo(gui.canvas);
+		poutre.compute_defo(glob.canvas);
 		// Redessiner la poutre
-		poutre.dessiner_defo(gui.canvas);
+		poutre.dessiner_defo(glob.canvas);
 	}
 	else
 	{
 		$("#estIso").html("n'est pas");
-		$("#zone_drop_barre").addClass("frozen");
-		$("#canvas_defo").addClass("frozen");
+		$("#zone_drop_barre, #canvas_defo").addClass("frozen");
 	}
 }
 
 function renouveller_interaction()
-// Lors de la création de nouveaux éléments, redéfinir les interactions possibles
+// Lors de la création de nouveaux éléments, il faut redéfinir les interactions possibles
 {
+	// Drag & drop
 	$(".cl_instance, .ch_instance").draggable({
-		snap: ".cl_instance, .ch_instance", // s'accroche aux autres CL
-		snapTolerance: gui.options.snapTol,
-		opacity: gui.options.drag_opacity,
+		snap: ".cl_instance, .ch_instance", // s'accroche aux autres instances
+		snapTolerance: glob.param.snapTol,
+		opacity: glob.param.drag_opacity,
 		cursor: "move",
 		stop: function(evt,ui)
 		{
 			var elt = $(ui.helper[0]);
 
-			// Ne pas traiter si l'objet est en cours de suppression
+			// Ne pas traiter les objets en cours de suppression
 			if( elt.hasClass("toBeRemoved") ) return;
 
-			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+			var pos_x = traitement_pos_x(elt);
+
 			if( elt.hasClass("ch_f_c") || elt.hasClass("ch_m_c") )
 			{
-				poutre.modifier_chargement(elt[0], "Y", pos_x, elt.height()); // TODO changement d'axe ; intégrer changement d'intensité
+				poutre.modifier_chargement(elt[0], "Y", pos_x,
+					elt.height()*glob.param.force_intensity_scale); // TODO changement d'axe ; intégrer changement d'intensité
 				// console.log(poutre.chargements.get(elt[0]).x0); // DEBUG
 			}
 			if( elt.hasClass("ch_f_r") || elt.hasClass("ch_m_r") )
 			{
-				poutre.modifier_chargement(elt[0], "Y", pos_x, elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer changement d'intensité
+				poutre.modifier_chargement(elt[0], "Y", pos_x,
+					elt.height()*glob.param.force_intensity_scale, pos_x+elt.width()); // TODO changement d'axe ; intégrer changement d'intensité
 				// console.log( [ poutre.chargements.get(elt[0]).x0 , poutre.chargements.get(elt[0]).x1 ] ); // DEBUG
 			}
 			if( elt.hasClass("cl_instance") )
@@ -218,8 +230,8 @@ function renouveller_interaction()
 		}
 	})
 
-	// Draggable resizable : envelopper
-	// http://jsfiddle.net/vrUgs/2/
+	// Resize chargements répartis
+	// Pour faire un draggable resizable, il faut envelopper dans un div : http://jsfiddle.net/vrUgs/2/
 	$(".ch_f_r, .ch_m_r").resizable({
 		containment: "parent",
 		handles: 'n, e, w', // north : intensité de la force
@@ -227,23 +239,53 @@ function renouveller_interaction()
 		stop: function(evt,ui)
 		{
 			var elt = ui.element;
-			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
-			poutre.modifier_chargement(elt[0], "Y", pos_x, elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer les chargement affines
+			var pos_x = traitement_pos_x(elt);
+			poutre.modifier_chargement(elt[0], "Y", pos_x,
+				elt.height()*glob.param.force_intensity_scale, pos_x+elt.width()); // TODO changement d'axe ; intégrer les chargement affines
 
 			update_defo();
 		}
 	})
-
+	// Resize chargement concentrés
 	$(".ch_f_c, .ch_m_c").resizable({
 		containment: "parent",
 		handles: 'n', // north : intensité de la force
 		stop: function(evt,ui)
 		{
 			var elt = ui.element;
-			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
-			poutre.modifier_chargement(elt[0], "Y", pos_x, elt.height()); // TODO changement d'axe ; intégrer les chargement affines
+			var pos_x = traitement_pos_x(elt);
+			poutre.modifier_chargement(elt[0], "Y", pos_x,
+				elt.height()*glob.param.force_intensity_scale); // TODO changement d'axe ; intégrer les chargement affines
 
 			update_defo();
 		}
 	})
+
+	// Double-clic (jQuery standard)
+	$( ".ch_instance" ).dblclick(function(handle) {
+		console.log( "Double-clic !" );
+		// var elt = $(handle.target);
+		// var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+		// poutre.modifier_chargement(elt[0], "Y", pos_x,
+		// 	-elt.height()*glob.param.force_intensity_scale); // TODO changement d'axe ; intégrer les chargement affines
+		// update_defo();
+	});
+}
+
+function traitement_pos_x(elt)
+// Calcule pos_x et empêche d'avoir des éléments qui dépassent de la poutre.
+// var pos_x = traitement_pos_x(elt);
+{
+	var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+
+	if( pos_x < glob.param.beam_ends_offset )
+	{
+		pos_x = glob.param.beam_ends_offset;
+	}
+	if( pos_x > glob.param.canvas_width - glob.param.beam_ends_offset )
+	{
+		pos_x = glob.param.canvas_width - glob.param.beam_ends_offset;
+	}
+
+	return pos_x;
 }

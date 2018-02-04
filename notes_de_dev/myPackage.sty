@@ -97,11 +97,7 @@
 \newcommand{\derp}[2]{\dfrac{\partial #1}{\partial #2}} % dérivée partielle quelconque
 \newcommand{\derpt}[1]{\dfrac{\partial #1}{\partial t}} % dérivée partielle par rapport au temps
 \newcommand{\derpx}[1]{\dfrac{\partial #1}{\partial x}} % dérivée partielle par rapport à x
-\newcommand{\Laplace}[1]{\mathcal L\left\{#1\right\}} % transformation de Laplace
 % Ensembles
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\R}{\mathbb{R}}
 % Complexes
 \renewcommand{\arg}{\mathrm{arg} \,}
 \renewcommand{\Re}{\mathrm{Re} \,}
@@ -116,16 +112,9 @@
 \renewcommand{\div}{\operatorname{div}} % divergence ; supplante le symbole division
 \newcommand{\rot}{\overrightarrow{\operatorname{rot}}\,} % rotationnel
 \newcommand{\intd}{\, \mathrm d} % d infinitésimal
-\newcommand{\tensograd}{\overline{\overline{\operatorname{grad}}} \,} % tenseur gradient
 \newcommand{\vecdiv}{\overrightarrow{\operatorname{div}} \, } % divergence vectorielle
 % Mécanique
-\newcommand{\observation}[2]{ (\mathcal #1 / \mathcal #2 ) } % observation de S par rapport à R
 \newcommand{\tens}[1]{\bar{\bar{ #1 }}} % tenseur
-\newcommand{\stress}{\tens \sigma} % tenseur des contraintes
-\newcommand{\strain}{\tens\varepsilon} % tenseur des déformations
-% Mécanique des fluides
-\newcommand{\domain}{\mathcal{D}} % domaine 3D
-\newcommand{\dermat}[1]{\dfrac{\mathrm D #1}{\mathrm Dt}} % dérivée matérielle
 % Autre
 \newcommand{\explication}[2]{\underset{\hbox{#1}}{\underbrace{#2}}} % info avec accolade (explication, formule)
 \newcommand{\unite}[1]{{\color{colVertUnite}{\mathrm{#1}}}} % écrire une unité en vert
@@ -133,10 +122,9 @@
 \newcommand{\h}[1]{ \colorbox{colSurligner}{$#1$} } % surligner (highlight) si on enlève les $$, il y a des marges
 \newcommand{\red}[1]{ \textcolor{red}{#1} } % écrire en rouge
 \newcommand{\blue}[1]{ \textcolor{blue}{#1} } % écrire en bleu
-\newcommand{\importantRouge}[1]{{\Large \[ \fcolorbox{black}{colImportant}{\boxed{ #1 }} \]}} % encadrer un résultat important avec un fond de couleur
 
 % système d'équations avec accolade
-\newenvironment{systeme}{\[\left\{\begin{array}{rl} }{ \end{array}\right.\]}
+\newenvironment{systeme}{\[\left\{\begin{array}{rcl} }{ \end{array}\right.\]}
 
 % Environnements perso
 \newtheorem{definition}{Définition}

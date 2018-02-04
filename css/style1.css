@@ -2,7 +2,7 @@
 
 :root
 {
-	--one-bg-color: rgb(50,60,100);
+	--one-bg-color: rgb(50,70,105);
 	--one-text-color: rgb(255,255,255);
 
 	--two-bg-color: rgb(200,203,220);
@@ -33,15 +33,15 @@ h1
 }
 
 
-.menus
+#menus
 {
 	background-color: var(--three-bg-color);
 	color: var(--three-text-color);
-
-
+	overflow: hidden;
+	margin: 0;
 }
 
-.menus h3
+#menus h3
 {
 	margin-top: 0;
 	padding: 5px;
@@ -52,6 +52,10 @@ h1
 #menuLiaisons,#menuChargements
 {
 	padding:0;
+}
+
+#menuLiaisons
+{
 	border-right: 3px solid var(--two-bg-color);
 }
 

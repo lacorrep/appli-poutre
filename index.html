@@ -8,12 +8,14 @@
 	<link rel="shortcut icon" href="img/favicon.png">
 
 	<!-- jQuery & jQueryUI -->
-	<!-- <script type="text/javascript" src="lib/jquery-3.2.1.min.js"></script> -->
-	<!-- <script type="text/javascript" src="lib/jquery-ui.min.js"></script> -->
-	<!-- <link rel="stylesheet" href="lib/jquery-ui.min.css"> -->
-	<script type="text/javascript" src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<!--
+	<script type="text/javascript" src="lib/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="lib/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="lib/jquery-ui.min.css">
+	-->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 	<!-- jQueryUI Touch Punch -->
 	<script type="text/javascript" src="lib/jquery.ui.touch-punch.min.js"></script>
@@ -30,7 +32,7 @@
 	<h1>Théorie des poutres <br><small>(en développement)</small></h1>
 
 
-	<div class="row menus">
+	<div id="menus" class="row">
 
 		<div id="menuLiaisons" class="col-sm-6">
 			<h3>Liaisons</h3>
@@ -88,7 +90,7 @@
 		<h4>Outils de débugage</h4>
 		<p>La poutre <span id="estIso">n'est pas</span> isostatique.</p>
 		<!-- <button onclick="alert(poutre.isostatique())">Isostatique ?</button> -->
-		<button onclick="poutre.compute_defo(gui.canvas);poutre.dessiner_defo(gui.canvas)">Update, dessiner</button>
+		<button onclick="update_defo()">Update déformée</button>
 		<button onclick="poutre.liaisons.forEach(function(val, cle) {console.log(val)})">Liste liaisons</button>
 		<button onclick="poutre.chargements.forEach(function(val, cle) {console.log(val)})">Liste chargements</button>
 		<button onclick="$('#zone_drop_barre').css({'position':'absolute','background-color':''})">-</button>
@@ -106,6 +108,11 @@
 	<!-- Tracé de la déformée -->
 	<canvas id="canvas_defo" class="frozen">Erreur : ce navigateur ne prend pas en charge <code>canvas</code>.</canvas>
 
+	<!-- Checkbox pour fixer l'échelle -->
+	<div class="container-fluid">
+		 <label><input type="checkbox" id="checkbox_fixer_echelle" onchange="glob.param.amplitude_fixee=this.checked;update_defo()"/> Fixer l'échelle</label>
+	</div>
+
 	<!-- Boîte de dialogue d'information -->
 	<div id="dialog-info" title="Informations">
 		<p>Placer les liaisons et les chargements sur la poutre (en gris) par glisser-déposer.</p>
@@ -118,14 +125,18 @@
 
 	<!-- Scripts -->
 	<script type="text/javascript" src="js/array_math.js"></script>
-	<script type="text/javascript" src="js/gui.js"></script>
+	<script type="text/javascript" src="js/glob.js"></script>
 	<script type="text/javascript" src="js/rdm.js"></script>
 	<script type="text/javascript" src="js/control.js"></script>
 	<script>
 	$( function() {
+		// Boîte de dialogue d'information
 		$( "#dialog-info" ).dialog();
 		$( "#dialog-info" ).dialog({closeText: "Fermer", minWidth: 600, minHeight: 160, resizable: false});
 		$( "#dialog-info" ).dialog("close");
+
+		// Checkbox pour fixer l'échelle
+		$("#checkbox_fixer_echelle").prop("checked", false);
 	} );
 	</script>
 </body>

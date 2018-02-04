@@ -1,13 +1,10 @@
-% Temps passé sur la rédaction
-% 04/07/2017 : 1H
-
 \documentclass[draft]{report}
 
 % Package personnalisé
 \usepackage{myPackage}
 
-\title{Appli Poutres - Notes de développement}
-\author{Paul \textsc{Lacorre}}
+\title{Appli Poutre - Notes de développement}
+\author{Utilisateur GitHub : \url{selakant}}
 \date{Juin 2017}
 
 \begin{document}
@@ -25,16 +22,18 @@
 \item Poutre isostatique (vérifié avant chaque résolution)
 \item Petites déformations (la déformation n'induit pas de nouveaux efforts internes)
 \item Sections droites (indéformables)
-\item Poutres d'Euler-Bernoulli : les sections restent perpendiculaires à la ligne moyenne \todo{(la rotation de la section est identique à la pente de la déformée)}
+\item Poutres d'Euler-Bernoulli : les sections restent perpendiculaires à la ligne moyenne
 \end{itemize}
+
+L'hypothèse d'Euler-Bernoulli implique que la rotation de la section est égale à la pente de la déformée (en petites transformations).
 
 \section{Équations du problème}
 
 Les équations à résoudre sont~:
 \begin{systeme}
-\der{u}{x} &= \dfrac{1}{ES} N(x) \\
+\der{u}{x} &=& \dfrac{1}{ES} N(x) \\
 \\
-\dfrac{\mathrm{d}^2 v}{\mathrm{d}x^2} &= \dfrac{1}{EI} M(x) \\
+\dfrac{\mathrm{d}^2 v}{\mathrm{d}x^2} &=& \dfrac{1}{EI} M(x) \\
 \end{systeme}
 On doit avoir 1 CL sur $u$ et 2 CL sur $v$.
 
@@ -42,7 +41,7 @@ Les deux problèmes sont clairement découplés.
 
 \subsection{Calcul des efforts internes $N$ et $M$}
 
-\todo{méthode de la coupure}
+Les efforts sont calculés par coupure en isolant la partie droite.\todo{}
 
 \subsection{Calcul des déplacements horizontaux $u$}
 On intègre la première équation entre $0$ et $x$~:
@@ -72,8 +71,14 @@ Si on a deux liaisons en $x_1$ et $x_2$~: la solution est définie à un polynô
 
 % FIN WIP
 
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Implémentation}
+
+% Parler des unités utilisées : EI = 1, longueur de poutre = 1., efforts...
 
 \section{Affichage de la poutre}
 
@@ -141,21 +146,21 @@ Sur la deuxième ligne, $j$-ième colonne~: on a $x$ la distance de la force à 
 
 \paragraph{Exemples} pour une poutre bi-appuyée (en $x$ et $x'$)~:
 \[ \begin{bmatrix}
-1 & 1 \\
-x & x' \\
+\red 1 & \blue 1 \\
+\red x & \blue{x'} \\
 \end{bmatrix}
 \begin{bmatrix}
-R_Y \\
-R_Y'
+\red{R_Y} \\
+\blue{R_Y'}
 \end{bmatrix}\]
 pour une poutre encastrée (en $x$)~:
 \[ \begin{bmatrix}
-1 & 0 \\
-x & 1 \\
+\red 1 & \blue 0 \\
+\red x & \blue 1 \\
 \end{bmatrix} 
 \begin{bmatrix}
-R_Y \\
-M
+\red{R_Y} \\
+\blue M
 \end{bmatrix}\]
 
 \paragraph{Résolution}
@@ -188,22 +193,13 @@ R2
 
 \noindent
 \begin{tabularx}{\textwidth}{llXl}
+\hline
 Nom & Version & Utilité & Source \\
 \hline\\
-jQuery & 3.2.1 & Permet de manipuler facilement le DOM. & jquery.com \\
-jQuery UI & 1.12.1 & Permet de définir rapidement des composants d'interface (drag and drop, redimensionnement) & jqueryui.com \\
-Touch Punch & 0.2.3 & Assure la compatibilité de jQuery UI avec les événements tactiles. & touchpunch.furf.com \\
-Bootstrap & 3.3.7 & Framework d'interface et responsive design. & getbootstrap.com \\
+jQuery & 3.2.1 & Permet de manipuler facilement le DOM. & \url{jquery.com} \\
+jQuery UI & 1.12.1 & Permet de définir rapidement des composants d'interface (\textit{drag and drop}, redimensionnement). & \url{jqueryui.com} \\
+Touch Punch & 0.2.3 & Assure la compatibilité de jQuery UI avec les événements tactiles. & \url{touchpunch.furf.com} \\
+Bootstrap & 3.3.7 & Framework d'interface et responsive design. & \url{getbootstrap.com} \\
 \end{tabularx}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Extensions possibles}
-
-\begin{itemize}
-\item Traction / compression
-\item Poutres hyperstatiques
-\item Vibrations
-\end{itemize}
 
 \end{document}

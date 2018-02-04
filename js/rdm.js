@@ -7,7 +7,7 @@ function Liaison(objDOM, type, axe, position)
 // axe <String> : "X" ou "Y"
 // position <Number> : position en pixels de la liaison dans la zone de dessin
 {
-	position -= gui.options.beam_ends_offset;
+	position -= glob.param.beam_ends_offset;
 
 	this.objDOM = objDOM;
 	this.x = position;
@@ -49,8 +49,8 @@ function Chargement(objDOM, type, axe, x0, f0, x1, f1)
 // x1 <Number> optionnel : position en pixels de la fin de l'effort la zone de dessin
 // f1 <Number> optionnel : intensité de la force en x1 // TODO
 {
-	x0 -= gui.options.beam_ends_offset;
-	x1 -= gui.options.beam_ends_offset;
+	x0 -= glob.param.beam_ends_offset;
+	x1 -= glob.param.beam_ends_offset;
 
 	this.objDOM = objDOM;
 	this.type = type;
@@ -73,8 +73,8 @@ function Poutre()
 {
 	var self = this;
 
-	self.ES = 1;
-	self.EI = 10;
+	self.ES = 100; // raideur en traction / compression
+	self.EI = 10; // raideur en flexion
 
 	// Grandeurs cinématiques (tableaux de nombres)
 	self.u = []; // déplacement
@@ -114,7 +114,7 @@ function Poutre()
 	self.modifier_liaison = function(objDOM, axe, x)
 	// Déplace une liaison sur la poutre
 	{
-		x -= gui.options.beam_ends_offset;
+		x -= glob.param.beam_ends_offset;
 		
 		self.liaisons.get( objDOM ).axe = axe;
 		self.liaisons.get( objDOM ).x = x;
@@ -140,8 +140,8 @@ function Poutre()
 	self.modifier_chargement = function(objDOM, axe, x0, f0, x1, f1)
 	// Modifie un chargement de la poutre
 	{
-		x0 -= gui.options.beam_ends_offset;
-		x1 -= gui.options.beam_ends_offset;
+		x0 -= glob.param.beam_ends_offset;
+		x1 -= glob.param.beam_ends_offset;
 
 		self.chargements.get( objDOM ).axe = axe;
 		self.chargements.get( objDOM ).x0 = x0;
@@ -166,8 +166,8 @@ function Poutre()
 	{
 		console.log(" # ====== UPDATE_DEF ========");
 
-		var nx = canvas.width - 2*gui.options.beam_ends_offset; // nombre de points du domaine
-		var dx = 1 / nx; // pas entre les points = longueur poutre / nombre de points
+		var nx = canvas.width - 2*glob.param.beam_ends_offset; // nombre de points du domaine
+		var dx = 1 / nx; // pas entre les points = longueur poutre (= 1) / nombre de points
 
 		if( !self.isostatique() )
 		{
@@ -203,7 +203,7 @@ function Poutre()
 		};
 		for(var chargement of self.chargements.values())
 		{
-			// TODO il faut soustraire gui.options.beam_ends_offset à tous les x... ou écrire directement le bon x dans les objets Liaison / Chargement
+			// TODO il faut soustraire glob.param.beam_ends_offset à tous les x... ou écrire directement le bon x dans les objets Liaison / Chargement
 			// console.log(chargement.type); // DEBUG
 			switch( chargement.type )
 			{
@@ -425,21 +425,38 @@ function Poutre()
 		ctx.clearRect(0,0, W,H);
 
 		// Amplitudes
-		var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * gui.options.defo_amplitude; // TODO selon la marge
-		var amp_v = 1 / self.v.abs().max() * H/2 * gui.options.defo_amplitude;
-		if( !isFinite(amp_v) ) amp_v = 0; // dessiner une poutre plate si l'ampitude est infinie
+		if( glob.param.amplitude_fixee )
+		{
+			var amp_u = glob.param.amp_u;
+			var amp_v = glob.param.amp_v;
+		}
+		else
+		{
+			var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * glob.param.defo_amp_max; // TODO selon la marge
+			var amp_v = 1 / self.v.abs().max() * H/2 * glob.param.defo_amp_max;
+			if( !isFinite(amp_v) ) amp_v = 0; // dessiner une poutre plate si l'ampitude est infinie
+			// Limiteur d'échelle
+			amp_v = Math.min(amp_v,3e3); // TODO limite arbitraire
 
-		console.log("amp_v " + amp_v);
+			console.log("amp_v " + amp_v);
 
+			// Mise à jour de l'objet global
+			glob.param.amp_u = amp_u;
+			glob.param.amp_v = amp_v;
+		}
+
+		// Définition du tracé
 		ctx.beginPath()
-		ctx.moveTo(gui.options.beam_ends_offset + self.u[0] * amp_u, H/2 - self.v[0] * amp_v);
+		ctx.moveTo(glob.param.beam_ends_offset + self.u[0] * amp_u, H/2 - self.v[0] * amp_v);
 		for (var i = 1; i < self.v.length; i++) {
-			ctx.lineTo(gui.options.beam_ends_offset + i + self.u[i] * amp_u, H/2 - self.v[i] * amp_v );
+			ctx.lineTo(glob.param.beam_ends_offset + i + self.u[i] * amp_u, H/2 - self.v[i] * amp_v );
 		};
 
 		// Style du trait et dessin
 		ctx.strokeStyle = "black";
-		ctx.lineWidth = gui.options.defo_epaisseur;
+		ctx.lineWidth = glob.param.defo_epaisseur;
+
+		// Dessin
 		ctx.stroke();
 	}
 }

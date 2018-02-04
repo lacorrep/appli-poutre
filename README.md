@@ -3,12 +3,12 @@
 Application web sur les poutres d'Euler-Bernoulli pour expérimenter avec les liaisons et les efforts.
 
 ## Structure du code
-* `index.html` Page principale.
+* `index.html` Page web de l'application.
 * `css/style1.css` Feuille de style par défaut.
-* `js/control.js` Définition des interactions avec les éléments de la page.
-* `js/rdm.js` (Résistance Des Matériaux) Partie calculs de physique, gestion des liaisons et chargements.
-* `js/gui.js` Options de l'application.
 * `js/array_math.js` Fonctions utiles pour effectuer des opérations mathématiques sur les Array.
+* `js/control.js` Définition des interactions avec les éléments de la page.
+* `js/glob.js` Paramètres globaux de l'application.
+* `js/rdm.js` (Résistance Des Matériaux) Code pour les calculs de physique, gestion des liaisons et chargements.
 * `notes_de_dev/` Notes de développement et liste des choses à faire.
   
 ## Dépendances
@@ -34,21 +34,19 @@ Application web sur les poutres d'Euler-Bernoulli pour expérimenter avec les li
 
 ## Temps de développement
 
-| ------------- | --------------|
-| Date			| Nb d'heures	|
-| ------------- | --------------|
-| 28/06/2017	| 4H			|
-| 30/06/2017	| 1H			|
-| 02/07/2017	| 1H			|
-| 03/07/2017	| 2H			|
-| 04/07/2017	| 3H			|
-| 09/07/2017	| 3H			|
-| 25/07/2017	| 3H			|
-| 27/07/2017	| 1H			|
-| 24/08/2017	| 4H			|
-| 20/09/2017	| 1H30			|
-| 26/12/2017	| 1H			|
-| 29/01/2018	| 1H			|
-| 30/01/2018	| 2H			|
-| 04/02/2018	| 3H			|
-| ------------- | --------------|
+### Date et nombre d'heures
+* 28/06/2017 : 4
+* 30/06/2017 : 1
+* 02/07/2017 : 1
+* 03/07/2017 : 2
+* 04/07/2017 : 4
+* 09/07/2017 : 3
+* 25/07/2017 : 3
+* 27/07/2017 : 1
+* 24/08/2017 : 4
+* 20/09/2017 : 1
+* 26/12/2017 : 1
+* 29/01/2018 : 1
+* 30/01/2018 : 2
+* 04/02/2018 : 5
+* 05/02/2018 : 1
