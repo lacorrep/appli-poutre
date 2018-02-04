@@ -1,32 +1,77 @@
+/* Variables CSS */
+
+:root
+{
+	--one-bg-color: rgb(50,60,100);
+	--one-text-color: rgb(255,255,255);
+
+	--two-bg-color: rgb(200,203,220);
+	--two-text-color: rgb(0,0,0);
+
+	--three-bg-color: rgb(230,230,240);
+	--three-text-color: rgb(0,0,0);
+}
+
+/* Sélecteurs */
+
 body
 {
 	text-align: center;
 	cursor: default;
+
+	font-family: "Arial", "Helvetica", "sans-serif";
+
+	background-color: rgb(255,255,255);
 }
 
 h1
 {
-	background-color: rgba(0,54,103, 1);
+	background-color: var(--one-bg-color);
 	margin:0;
 	padding: 0.2em;
-	color: white;
+	color: var(--one-text-color);
 }
 
-.menu
+
+.menus
 {
-	background-color: rgba(208,215,0, 1);
-	color: rgba(0,54,103, 1);
+	background-color: var(--three-bg-color);
+	color: var(--three-text-color);
+
+
 }
+
+.menus h3
+{
+	margin-top: 0;
+	padding: 5px;
+	background-color: var(--two-bg-color);
+	color: var(--two-text-color);
+}
+
+#menuLiaisons,#menuChargements
+{
+	padding:0;
+	border-right: 3px solid var(--two-bg-color);
+}
+
 
 .menu div.row > div
 {
-/* ??? */
+/* TODO ??? */
 }
+
 
 #zone_drop_barre, #canvas_defo
 {
 	box-sizing: content-box;
 	border: solid black 2px;
+}
+
+#zone_drop_barre.frozen, #canvas_defo.frozen
+{
+	/* Lorsque la poutre n'est pas isostatique, le bord de la zone de dessin s'affiche en rouge. */
+	border-color: rgb(255,120,120);
 }
 
 #zone_drop_barre, #barre, #canvas_defo
@@ -46,14 +91,10 @@ h1
 
 	line-height: 0; font-size: 0;
 
-	/*background-color: rgba(0,128,255,0.3);*/
+	/*background-color: white;*/
 	border-bottom: 0px; /* permet une juxtaposition des cadres plus propre : pas de trait double épaisseur */
 }
 
-.frozen
-{
-	background-color: rgb(255,240,240);
-}
 
 #barre
 {
@@ -75,8 +116,17 @@ h1
 	
 	pointer-events: none; /* jamais d'interaction avec le curseur (pas de clic) */
 
-	/*background-color: rgba(0,0,0,0.3);*/
+	background-color: white;
 }
+
+
+#bt-info
+{
+	position: fixed;
+	top: 5px;
+	right: 5px;
+}
+
 
 /* ================= Liaisons ================= */
 
@@ -143,7 +193,7 @@ h1
 	background-position: left top, left top;
 	background-repeat: no-repeat, repeat-y;
 
-	width: 15px;
+	width: 9px;
 	height: 40px;
 
 	cursor: move;
@@ -160,30 +210,32 @@ h1
 
 #ch_distri_f_c, .ch_f_c
 {
-	background-color: yellow;
+	background-color: rgba(255,255,0,0.5);
 }
 
 #ch_distri_f_r, .ch_f_r
 {
-	background-color: rgba(255,128,128,0.8);
+	width: 18px;
+	background-color: rgba(255,128,128,0.5);
 	background-repeat: repeat-x, repeat;
 }
 
 #ch_distri_m_c, .ch_m_c
 {
-	background-color: purple;
+	background-color: rgba(128,0,255,0.5);
 }
 
 #ch_distri_m_r, .ch_m_r
 {
-	background-color: rgba(0,255,0,0.8);
+	width: 18px;
+	background-color: rgba(0,255,0,0.5);
 	background-repeat: repeat-x, repeat;
 }
 
 
 
 
-/* jQuery */
+/* Classes jQueryUI */
 
 .ui-resizable-handle.ui-resizable-e, .ui-resizable-handle.ui-resizable-w
 {

@@ -1,3 +1,4 @@
+// Variable globale
 var poutre = new Poutre();
 
 function debugmode() {
@@ -21,17 +22,6 @@ $(".menu").disableSelection();
 
 // Explication de ce qu'est un ddl avec la balise abbr
 $("ddl").replaceWith('<abbr title="Degré de liberté">ddl</abbr>')
-
-// DEBUG
-// $("html").mousedown(function(e) {
-// 	// console.log(e.which);
-// 	if( e.which === 2 ) {
-// 		e.preventDefault();
-// 		poutre.compute_defo(gui.canvas)
-// 		poutre.dessiner_defo(gui.canvas)
-// 	}
-// });
-
 
 
 // Drag & drop Liaisons
@@ -115,7 +105,7 @@ $("#zone_drop_barre").droppable({
 					// Concentré
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
-					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y", pos_x, 1); // TODO remplacer 1 par une hauteur de base
+					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y", pos_x, 0.25*gui.options*canvas_height); // TODO remplacer 1 par une hauteur de base
 					break;
 				case "f_r":
 				case "m_r":
@@ -176,8 +166,9 @@ function update_defo()
 	// Vérifier et afficher l'isostaticité
 	if( poutre.isostatique() )
 	{
-		$("#estIso").html("est isostatique");
+		$("#estIso").html("est");
 		$("#zone_drop_barre").removeClass("frozen");
+		$("#canvas_defo").removeClass("frozen");
 		// Calculer la déformée
 		poutre.compute_defo(gui.canvas);
 		// Redessiner la poutre
@@ -185,8 +176,9 @@ function update_defo()
 	}
 	else
 	{
-		$("#estIso").html("n'est pas isostatique");
+		$("#estIso").html("n'est pas");
 		$("#zone_drop_barre").addClass("frozen");
+		$("#canvas_defo").addClass("frozen");
 	}
 }
 
@@ -203,18 +195,7 @@ function renouveller_interaction()
 			var elt = $(ui.helper[0]);
 
 			// Ne pas traiter si l'objet est en cours de suppression
-			if( elt.hasClass("toBeRemoved") )
-				return;
-			// {
-			// 	console.log("@@@@ removing"); // DEBUG
-			// 	console.log( elt ); // DEBUG
-			// 	console.log( ui.helper[0] ); // DEBUG
-
-			// 	if( elt.hasClass("cl_instance") ) poutre.retirer_liaison( ui.helper[0] ); // TODO $(this)[0] ?
-			// 	if( elt.hasClass("ch_instance") ) poutre.retirer_chargement( ui.helper[0] );
-			// 	elt.remove();
-			// 	return;
-			// }
+			if( elt.hasClass("toBeRemoved") ) return;
 
 			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 			if( elt.hasClass("ch_f_c") || elt.hasClass("ch_m_c") )

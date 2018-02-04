@@ -1,6 +1,11 @@
+// Bibliothèque de classes pour gérer la résistance des matériaux dans cette application
+
 function Liaison(objDOM, type, axe, position)
-// Objet simple contenant un objet du DOM <objet DOM>,
-// un nom de type <String> et une position <Number en px>
+// Représente une liaison mécanique (condition aux limites de type cinématique).
+// objDOM <objet du DOM> : l'objet du DOM associé à la liaison
+// type <String> : "appui", "pivot", "encastrement"
+// axe <String> : "X" ou "Y"
+// position <Number> : position en pixels de la liaison dans la zone de dessin
 {
 	position -= gui.options.beam_ends_offset;
 
@@ -14,37 +19,41 @@ function Liaison(objDOM, type, axe, position)
 		case "appui":
 			this.axe = axe;
 			if(this.axe === "X")
-				this.bloque = [true, false, false]; // U
+				this.bloque = [true, false, false]; // bloque U
 			else if(this.axe === "Y")
-				this.bloque = [false, true, false]; // V
+				this.bloque = [false, true, false]; // bloque V
 			else
 				alert("Erreur : axe de liaison inconnu.")
 			break;
 
 		case "pivot":
-			this.bloque = [true, true, false]; // U, V
+			this.bloque = [true, true, false]; // bloque U, V
 			break;
 
 		case "encastrement":
-			this.bloque = [true, true, true]; // U, V, THETA
+			this.bloque = [true, true, true]; // bloque U, V, THETA
 			break;
 		default:
 			alert("Erreur : type de liaison inconnu.")
 	}
-	this.reaction = [undefined,undefined,undefined]; // réaction à calculer
+	//this.reaction = [undefined,undefined,undefined]; // TODO
 }
 
 function Chargement(objDOM, type, axe, x0, f0, x1, f1)
-// Objet simple contenant un objet du DOM <objet DOM>,
-// un nom de type <String>, les positions de début et de fin
-// (x1 optionnel, seulement si effort réparti) <Number en px>,
-// la valeur de la force <Number>
+// Représente un chargement mécanique (condition aux limites de type sthénique).
+// objDOM <objet du DOM> : l'objet du DOM associé au chargement
+// type <String> : "f_c" (force concentrée), "f_r" (force répartie), "m_c" (moment concentré), "m_r" (moment réparti)
+// axe <String> : "X" ou "Y"
+// x0 <Number> : position en pixels du premier point d'application de l'effort dans la zone de dessin
+// f0 <Number> : intensité de la force en x0
+// x1 <Number> optionnel : position en pixels de la fin de l'effort la zone de dessin
+// f1 <Number> optionnel : intensité de la force en x1 // TODO
 {
 	x0 -= gui.options.beam_ends_offset;
 	x1 -= gui.options.beam_ends_offset;
 
 	this.objDOM = objDOM;
-	this.type = type; // types possibles : f_c | f_r | m_c | m_r
+	this.type = type;
 	if( axe !== "X" && axe !== "Y" )
 	{
 		alert("Erreur : axe de chargement inconnu.")
@@ -60,6 +69,7 @@ function Chargement(objDOM, type, axe, x0, f0, x1, f1)
 }
 
 function Poutre()
+// Représente une poutre.
 {
 	var self = this;
 
@@ -99,8 +109,6 @@ function Poutre()
 	// Ajoute une liaison sur la poutre
 	{
 		self.liaisons.set( objDOM, new Liaison(objDOM, type, axe, x) )
-
-		// alert( self.isostatique() ? "Isostatique" : "Non isostatique" ) // DEBUG
 	}
 
 	self.modifier_liaison = function(objDOM, axe, x)
@@ -111,7 +119,6 @@ function Poutre()
 		self.liaisons.get( objDOM ).axe = axe;
 		self.liaisons.get( objDOM ).x = x;
 
-		// alert( self.isostatique() ? "Isostatique" : "Non isostatique" ) // DEBUG
 		// console.log( self.liaisons.get( objDOM ) )
 	}
 
@@ -119,8 +126,6 @@ function Poutre()
 	// Retire une liaison sur la poutre
 	{
 		self.liaisons.delete( objDOM )
-
-		// alert( self.isostatique() ? "Isostatique" : "Non isostatique" ) // DEBUG
 	}
 
 	self.ajouter_chargement = function(objDOM, type, axe, x0, f0, x1, f1)
@@ -129,7 +134,7 @@ function Poutre()
 		// apparemment ça ne bug pas quand on ne fournit pas x1 et f1
 		self.chargements.set( objDOM, new Chargement(objDOM, type, axe, x0, f0, x1, f1) ) // TODO x1 f1
 
-		// alert("debug : bien ajouté") // DEBUG
+		// alert("ajouter_chargement appelé") // DEBUG
 	}
 
 	self.modifier_chargement = function(objDOM, axe, x0, f0, x1, f1)
@@ -153,13 +158,13 @@ function Poutre()
 	{
 		self.chargements.delete( objDOM )
 
-		// alert("debug : bien retiré") // DEBUG
+		// alert("retirer_chargement appelé") // DEBUG
 	}
 
 	self.compute_defo = function(canvas)
 	// Calcule les déformées et les stock dans self.
 	{
-		console.log(" #====== UPDATE_DEF ========");
+		console.log(" # ====== UPDATE_DEF ========");
 
 		var nx = canvas.width - 2*gui.options.beam_ends_offset; // nombre de points du domaine
 		var dx = 1 / nx; // pas entre les points = longueur poutre / nombre de points
@@ -380,10 +385,8 @@ function Poutre()
 		}
 
 		// On impose fortement la CL sur v : v=0 en x_R_flex[0] et x_R_flex[1]
-		// La solution sans CL est définie à une droite près, on soustrait cette droite
-		// pour annuler v sur les liaisons.
-		// ATTENTION : ici ça marche parce que le seul moyen d'imposer une pente nulle,
-		// c'est l'encastrement qui impose également une flèche nulle.
+		// La solution sans CL est définie à une droite près, on soustrait cette droite pour annuler v sur les liaisons.
+		// ATTENTION : ici ça fonctionne parce que la seule liaison capable d'imposer une pente nulle, c'est l'encastrement qui impose également une flèche nulle.
 		if( type_R_flex[0] === "force" && type_R_flex[1] === "force" ) {
 			// droite
 			var v_x_R1 = self.v[ x_R_flex[0] ];
@@ -410,7 +413,7 @@ function Poutre()
 				self.v[i] -= deplacement_a_soustraire;
 		}
 
-		console.log(" #====== FIN UPDATE_DEF ========");
+		console.log(" # ====== FIN UPDATE_DEF ========");
 		return 1
 	}
 
@@ -419,12 +422,12 @@ function Poutre()
 		var ctx = canvas.getContext("2d");
 		var W = canvas.width;
 		var H = canvas.height;
-		ctx.clearRect(0,0,W,H);
+		ctx.clearRect(0,0, W,H);
 
 		// Amplitudes
 		var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * gui.options.defo_amplitude; // TODO selon la marge
 		var amp_v = 1 / self.v.abs().max() * H/2 * gui.options.defo_amplitude;
-		if( !isFinite(amp_v) ) amp_v = 0;
+		if( !isFinite(amp_v) ) amp_v = 0; // dessiner une poutre plate si l'ampitude est infinie
 
 		console.log("amp_v " + amp_v);
 
@@ -437,11 +440,14 @@ function Poutre()
 		// Style du trait et dessin
 		ctx.strokeStyle = "black";
 		ctx.lineWidth = gui.options.defo_epaisseur;
-		ctx.stroke()
+		ctx.stroke();
 	}
 }
 
 function arrondir(nombre, n_decimale)
+// Arrondi à la n-ième décimale.
+// nombre <Number> : nombre à arrondir
+// n_decimale <Number> : décimale à laquelle arrondir
 {
 	var puissance = Math.pow(10,n_decimale);
 	return Math.round(nombre*puissance)/puissance;

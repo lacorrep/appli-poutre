@@ -1,11 +1,12 @@
-// GLOBAL Éléments et options de l'interface graphique
+// Variable globale
+// Éléments et options de l'interface graphique
 var gui = {};
 
-// Options
+// Options / paramètres
 gui.options = {
-	canvas_height: 400, // hauteur du canvas pour la déformée
-	canvas_width: 800, // largeur
-	beam_ends_offset: 40, // nombre de pixels entre le bord de la zone de dessin et chaque extrêmité de la poutre
+	canvas_height: 400, // hauteur (en pixels) du canvas pour la déformée
+	canvas_width: 800, // largeur (en pixels)
+	beam_ends_offset: 40, // distance (en pixels) entre le bord de la zone de dessin et chaque extrêmité de la poutre
 	drag_opacity: 0.6, // opacité des éléments quand dragged
 	snapTol: 7, // tolérance pour snapper les CL et efforts
 	resize_minWidth: 10, // plus petite épaisseur d'un chargement réparti // TODO

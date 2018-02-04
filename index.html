@@ -1,106 +1,98 @@
-<!-- Temps :
-28/06/2017 4H
-30/06/2017 1H
-02/07/2017 1H
-03/07/2017 2H
-04/07/2017 3H
-09/07/2017 3H
-25/07/2017 3H
-27/07/2017 1H
-24/08/2017 4H
-20/09/2017 1H30
-26/12/2017 1H
-29/01/2018 1H (GitHub + nettoyage)
--->
-
-<!-- http://howtocenterincss.com/ -->
-<!-- http://phrogz.net/CSS/vertical-align/index.html -->
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<title>Poutres d'Euler-Bernoulli</title>
+	<title>Théorie des poutres</title>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<!-- jQuery -->
-	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
-	<link rel="stylesheet" href="css/jquery-ui.min.css">
+	<link rel="shortcut icon" href="img/favicon.png">
+
+	<!-- jQuery & jQueryUI -->
+	<!-- <script type="text/javascript" src="lib/jquery-3.2.1.min.js"></script> -->
+	<!-- <script type="text/javascript" src="lib/jquery-ui.min.js"></script> -->
+	<!-- <link rel="stylesheet" href="lib/jquery-ui.min.css"> -->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+	<!-- jQueryUI Touch Punch -->
+	<script type="text/javascript" src="lib/jquery.ui.touch-punch.min.js"></script>
 
 	<!-- Bootstrap -->
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- <link rel="stylesheet" href="lib/bootstrap.min.css"> -->
+	<!-- Compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 	<!-- CSS spécifique -->
 	<link rel="stylesheet" href="css/style1.css">
-
-	<!-- Javascript spécifique -->
-	<script type="text/javascript" src="js/array_math.js"></script>
-	<script type="text/javascript" src="js/gui.js"></script>
-	<script type="text/javascript" src="js/rdm.js"></script>
-	<script type="text/javascript" src="js/control.js"></script>
 </head>
 <body>
-	<h1>RDM</h1>
+	<h1>Théorie des poutres <br><small>(en développement)</small></h1>
 
-	<div id="menuLiaisons" class="container-fluid menu">
-		<h3>Liaisons</h3>
-		<div class="row">
-			<div class="col-xs-4">
-				<h4>Appui</h4>
-				<!-- <img src="" alt="Appui"> -->
-				<span id="cl_distri_appui" class="cl_distributeur"></span>
-				<p class="small">Bloque 1 <ddl></ddl> de translation</p>
-			</div>
-			<div class="col-xs-4">
-				<h4>Pivot</h4>
-				<!-- <img src="" alt="Pivot"> -->
-				<span id="cl_distri_pivot" class="cl_distributeur"></span>
-				<p class="small">Bloque 2 <ddl></ddl> de translation</p>
-			</div>
-			<div class="col-xs-4">
-				<h4>Encastrement</h4>
-				<!-- <img src="" alt="Encastrement"> -->
-				<span id="cl_distri_encastrement" class="cl_distributeur"></span>
-				<p class="small">Bloque 2 <ddl></ddl> de translation et 1 <ddl></ddl> de rotation</p>
+
+	<div class="row menus">
+
+		<div id="menuLiaisons" class="col-sm-6">
+			<h3>Liaisons</h3>
+			<div class="row">
+				<div class="col-xs-4">
+					<h4>Appui</h4>
+					<!-- <img src="" alt="Appui"> -->
+					<span id="cl_distri_appui" class="cl_distributeur"></span>
+					<p class="small">Bloque 1 <ddl></ddl> de translation</p>
+				</div>
+				<div class="col-xs-4">
+					<h4>Pivot</h4>
+					<!-- <img src="" alt="Pivot"> -->
+					<span id="cl_distri_pivot" class="cl_distributeur"></span>
+					<p class="small">Bloque 2 <ddl></ddl> de translation</p>
+				</div>
+				<div class="col-xs-4">
+					<h4>Encastrement</h4>
+					<!-- <img src="" alt="Encastrement"> -->
+					<span id="cl_distri_encastrement" class="cl_distributeur"></span>
+					<p class="small">Bloque 2 <ddl></ddl> de translation et 1 <ddl></ddl> de rotation</p>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div id="menuChargements" class="container-fluid menu">
-		<h3>Chargements</h3>
-		<div class="row">
-			<div class="col-xs-3">
-				<h4>Force concentrée</h4>
-				<!-- <img src="img/" alt="Force concentrée"> -->
-				<span id="ch_distri_f_c" class="ch_distributeur"></span>
-			</div>
-			<div class="col-xs-3">
-				<h4>Force répartie</h4>
-				<!-- <img src="img/" alt="Force répartie"> -->
-				<span id="ch_distri_f_r" class="ch_distributeur"></span>
-			</div>
-			<div class="col-xs-3">
-				<h4>Moment concentré</h4>
-				<!-- <img src="img/" alt="Moment concentré"> -->
-				<span id="ch_distri_m_c" class="ch_distributeur"></span>
-			</div>
-			<div class="col-xs-3">
-				<h4>Moment réparti</h4>
-				<!-- <img src="img/" alt="Moment réparti"> -->
-				<span id="ch_distri_m_r" class="ch_distributeur"></span>
+		<div id="menuChargements" class="col-sm-6">
+			<h3>Chargements</h3>
+			<div class="row">
+				<div class="col-xs-3">
+					<h4>Force concentrée</h4>
+					<!-- <img src="img/" alt="Force concentrée"> -->
+					<span id="ch_distri_f_c" class="ch_distributeur"></span>
+				</div>
+				<div class="col-xs-3">
+					<h4>Force répartie</h4>
+					<!-- <img src="img/" alt="Force répartie"> -->
+					<span id="ch_distri_f_r" class="ch_distributeur"></span>
+				</div>
+				<div class="col-xs-3">
+					<h4>Moment concentré</h4>
+					<!-- <img src="img/" alt="Moment concentré"> -->
+					<span id="ch_distri_m_c" class="ch_distributeur"></span>
+				</div>
+				<div class="col-xs-3">
+					<h4>Moment réparti</h4>
+					<!-- <img src="img/" alt="Moment réparti"> -->
+					<span id="ch_distri_m_r" class="ch_distributeur"></span>
+				</div>
 			</div>
 		</div>
+		
 	</div>
 
 	<div id="debug-tools" class="container-fluid" style="background-color: gray; display: none;">
 		<h4>Outils de débugage</h4>
-		<p>La poutre <span id="estIso">n'est pas isostatique</span>.</p>
+		<p>La poutre <span id="estIso">n'est pas</span> isostatique.</p>
 		<!-- <button onclick="alert(poutre.isostatique())">Isostatique ?</button> -->
 		<button onclick="poutre.compute_defo(gui.canvas);poutre.dessiner_defo(gui.canvas)">Update, dessiner</button>
-		<button onclick="$('#zone_drop_barre').css('position','absolute')">-</button>
-		<button onclick="$('#zone_drop_barre').css('position','relative')">=</button>
+		<button onclick="poutre.liaisons.forEach(function(val, cle) {console.log(val)})">Liste liaisons</button>
+		<button onclick="poutre.chargements.forEach(function(val, cle) {console.log(val)})">Liste chargements</button>
+		<button onclick="$('#zone_drop_barre').css({'position':'absolute','background-color':''})">-</button>
+		<button onclick="$('#zone_drop_barre').css({'position':'relative','background-color':'white'})">=</button>
 	</div>
 
 	<div class="container-fluid"><br></div>
@@ -112,8 +104,29 @@
 	</div>
 
 	<!-- Tracé de la déformée -->
-	<canvas id="canvas_defo">Erreur : balise canvas non supportée par votre navigateur.</canvas>
+	<canvas id="canvas_defo" class="frozen">Erreur : ce navigateur ne prend pas en charge <code>canvas</code>.</canvas>
 
+	<!-- Boîte de dialogue d'information -->
+	<div id="dialog-info" title="Informations">
+		<p>Placer les liaisons et les chargements sur la poutre (en gris) par glisser-déposer.</p>
+		<p>Le bord du cadre s'affiche en rouge tant que le système n'est pas isostatique.</p>
+		<p><strong>→ Pour contribuer :</strong> <a href="https://github.com/selakant/appli-poutre">https://github.com/selakant/appli-poutre</a></p>
+	</div>
 
+	<!-- Bouton Informations -->
+	<button class="btn btn-default btn-sm" id="bt-info" onclick="$( '#dialog-info' ).dialog('open');"><span class="glyphicon glyphicon-info-sign"></span></button>
+
+	<!-- Scripts -->
+	<script type="text/javascript" src="js/array_math.js"></script>
+	<script type="text/javascript" src="js/gui.js"></script>
+	<script type="text/javascript" src="js/rdm.js"></script>
+	<script type="text/javascript" src="js/control.js"></script>
+	<script>
+	$( function() {
+		$( "#dialog-info" ).dialog();
+		$( "#dialog-info" ).dialog({closeText: "Fermer", minWidth: 600, minHeight: 160, resizable: false});
+		$( "#dialog-info" ).dialog("close");
+	} );
+	</script>
 </body>
 </html>
