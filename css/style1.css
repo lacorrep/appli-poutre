@@ -12,6 +12,31 @@
 	--three-text-color: rgb(0,0,0);
 }
 
+/* Responsive */
+body {
+	font-size: 10pt;
+}
+
+/* Sur téléphones */
+@media only screen and (max-width: 500px) {
+	body {
+		/* Empêche de scroller */
+		overflow-x: hidden;
+		position: fixed;
+	}
+	h1 {
+		font-size: 190%;
+	}
+	h3 {
+		font-size: 120%;
+		font-weight: bold;
+		margin-bottom: 5px;
+	}
+	h4 {
+		font-size: 100%;
+	}
+}
+
 /* Sélecteurs */
 
 body
@@ -22,6 +47,11 @@ body
 	font-family: "Arial", "Helvetica", "sans-serif";
 
 	background-color: rgb(255,255,255);
+}
+
+a
+{
+	text-decoration: underline;
 }
 
 h1
@@ -193,7 +223,6 @@ h1
 	background-color: gray;
 	display: inline-block;
 
-	background-image: url(../img/arrow_head_up.png) , url(../img/arrow_body.png);
 	background-position: left top, left top;
 	background-repeat: no-repeat, repeat-y;
 
@@ -209,7 +238,6 @@ h1
 	bottom: 50%;
 	height: 25%;
 }
-
 
 
 #ch_distri_f_c, .ch_f_c
@@ -236,8 +264,30 @@ h1
 	background-repeat: repeat-x, repeat;
 }
 
+/* Forces */
+#ch_distri_f_c, .ch_f_c,
+#ch_distri_f_r, .ch_f_r
+{
+	background-image: url(../img/arrow_head_up.png) , url(../img/arrow_body.png);
+}
+
+/* Moments */
+#ch_distri_m_c, .ch_m_c,
+#ch_distri_m_r, .ch_m_r
+{
+	background-image: url(../img/arrow_moment.png);
+	background-repeat: repeat;
+}
 
 
+
+/* Classes Bootstrap */
+
+div.col-xs-4
+{
+	padding-left: 10px;
+	padding-right: 10px;
+}
 
 /* Classes jQueryUI */
 

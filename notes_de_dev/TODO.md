@@ -1,13 +1,12 @@
 ﻿# En cours
 
+* Agrandir les images des liaisons.
 * Le double-clic doit inverser le sens de l'effort.
-* Changer l'apparence des moments.
 * `resizable` : appliquer `glob.param.resize_minWidth`
 * Appliquer `glob.param.resizeTol` au CSS de jQueryUI `.ui-resizable-handle.ui-resizable-n`
 ## `rdm.js`
 * Gérer les positions `x`, `x0`, `x1` en pixels correctement (offset avec le bord) !!!
 * L'attribut `objDOM` des `Liaison` et `Chargement` n'est pas nécessaire, les données de l'interface sont lues mais jamais écrites (pas de contrôle de la vue par `rdm.js`)
-* `moment_intensity_scale` : tout passer dans `rdm.js`
 * Déterminer `f1` pour les chargements répartis
 
 # Bugs connus
@@ -28,7 +27,7 @@
 
 # Améliorations futures
 
-* 100% compatible mobile
+* 100% compatible mobile (désactiver le scroll)
 * Traction / compression (forces horizontales, amplitude de la déformée...)
 * Chargements répartis variables (linéaires)
 * Poutres en vibration

@@ -209,31 +209,31 @@ function Poutre()
 			{
 				case "f_c":
 					if( chargement.axe === "X" )
-						FX[chargement.x0] += chargement.f0;
+						FX[chargement.x0] += chargement.f0 * glob.param.force_intensity_scale;
 					else // Y
-						FY[chargement.x0] += chargement.f0;
+						FY[chargement.x0] += chargement.f0 * glob.param.force_intensity_scale;
 					break;
 
 				case "f_r":
 					if( chargement.axe === "X" )
 					{
 						for(var xi = chargement.x0; (xi < chargement.x1) && (xi < nx); xi++)
-							FX[xi] += chargement.f0 * dx; // TODO interpolation entre f0 et f1
+							FX[xi] += chargement.f0 * dx * glob.param.force_intensity_scale; // TODO interpolation entre f0 et f1
 					}
 					else // Y
 					{
 						for(var xi = chargement.x0; (xi < chargement.x1) && (xi < nx); xi++)
-							FY[xi] += chargement.f0 * dx; // TODO interpolation
+							FY[xi] += chargement.f0 * dx * glob.param.force_intensity_scale; // TODO interpolation
 					}
 					break;
 
 				case "m_c":
-					M[chargement.x0] += chargement.f0;
+					M[chargement.x0] += chargement.f0 * glob.param.moment_intensity_scale;
 					break;
 
 				case "m_r":
 					for(var xi = chargement.x0; (xi < chargement.x1) && (xi < nx); xi++)
-						M[xi] += chargement.f0 * dx; // TODO interpolation
+						M[xi] += chargement.f0 * dx * glob.param.moment_intensity_scale; // TODO interpolation
 					break;
 			}
 		}

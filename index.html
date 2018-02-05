@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
 	<title>Théorie des poutres</title>
+	
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="shortcut icon" href="img/favicon.png">
 
@@ -93,6 +94,7 @@
 		<button onclick="update_defo()">Update déformée</button>
 		<button onclick="poutre.liaisons.forEach(function(val, cle) {console.log(val)})">Liste liaisons</button>
 		<button onclick="poutre.chargements.forEach(function(val, cle) {console.log(val)})">Liste chargements</button>
+		<button onclick="set_beam_frame()">Réajuster canvas</button>
 		<button onclick="$('#zone_drop_barre').css({'position':'absolute','background-color':''})">-</button>
 		<button onclick="$('#zone_drop_barre').css({'position':'relative','background-color':'white'})">=</button>
 	</div>
@@ -117,7 +119,8 @@
 	<div id="dialog-info" title="Informations">
 		<p>Placer les liaisons et les chargements sur la poutre (en gris) par glisser-déposer.</p>
 		<p>Le bord du cadre s'affiche en rouge tant que le système n'est pas isostatique.</p>
-		<p><strong>→ Pour contribuer :</strong> <a href="https://github.com/selakant/appli-poutre">https://github.com/selakant/appli-poutre</a></p>
+		<p><strong>→ Pour signaler un bug ou nous faire part de vos remarques :</strong> <a href="https://docs.google.com/forms/d/e/1FAIpQLSeyA6_NMe7JazH_YkxBdzbqQlZnnhDKP0FmmtwdYFHxzK0XyA/viewform?usp=sf_link">Google Form</a></p>
+		<p><strong>→ Pour contribuer :</strong> <a href="https://github.com/selakant/appli-poutre">GitHub du projet</a></p>
 	</div>
 
 	<!-- Bouton Informations -->
@@ -132,7 +135,7 @@
 	$( function() {
 		// Boîte de dialogue d'information
 		$( "#dialog-info" ).dialog();
-		$( "#dialog-info" ).dialog({closeText: "Fermer", minWidth: 600, minHeight: 160, resizable: false});
+		$( "#dialog-info" ).dialog({closeText: "Fermer", minWidth: 300, minHeight: 160, resizable: false});
 		$( "#dialog-info" ).dialog("close");
 
 		// Checkbox pour fixer l'échelle

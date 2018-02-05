@@ -2,9 +2,39 @@
 var poutre = new Poutre();
 
 
-function debug() {
-	// Active les outils de débugage
+function debug()
+// Active les outils de débugage
+{
 	$("#debug-tools").css("display","block");
+}
+
+function set_beam_frame()
+// Mise en forme de la zone de dessin
+{
+	var window_Width = $(window).width();
+
+	// Si on manque de place, réduire
+	if( window_Width <  1000 ) {
+		// Petit
+		glob.param.canvas_ratio_width = 0.95;
+		glob.param.beam_ends_offset = 8;
+		$( "#dialog-info" ).dialog({minWidth: 300});
+	}
+	else
+	{
+		// Grand
+		glob.param.canvas_ratio_width = 0.65;
+		glob.param.beam_ends_offset = 30;
+		$( "#dialog-info" ).dialog({minWidth: 600});
+	}
+
+	// Taille du canvas
+	glob.param.canvas_width = Math.round( glob.param.canvas_ratio_width * window_Width );
+	glob.param.canvas_height = Math.round( glob.param.canvas_ratio_height * glob.param.canvas_width );
+
+	$("#canvas_defo").attr({height: glob.param.canvas_height, width: glob.param.canvas_width})
+	$("#zone_drop_barre").css({height: glob.param.canvas_height, width: glob.param.canvas_width})
+	$("#barre").css({height: glob.param.defo_epaisseur, width: glob.param.canvas_width - 2*glob.param.beam_ends_offset})
 }
 
 
@@ -13,10 +43,17 @@ $(function(){
 
 // Objet DOM Canvas
 glob.canvas = $("#canvas_defo")[0];
-// Mise en forme de la zone de dessin
-$("#canvas_defo").attr({height: glob.param.canvas_height, width: glob.param.canvas_width})
-$("#zone_drop_barre").css({height: glob.param.canvas_height, width: glob.param.canvas_width})
-$("#barre").css({height: glob.param.defo_epaisseur, width: glob.param.canvas_width - 2*glob.param.beam_ends_offset})
+
+// Ajuster les éléments de la page
+set_beam_frame();
+
+// Réagir au redimensionnement de la fenêtre
+// NON : ça oblige à repositioner les Liaison et Chargement.
+// $( window ).resize(function() {
+//   console.log('window resized');
+//   set_beam_frame()
+// });
+
 
 // Pas de sélection du texte dans le titre ou les menus
 $("h1,#menuLiaisons,#menuChargements").disableSelection();
@@ -113,7 +150,7 @@ $("#zone_drop_barre").droppable({
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
 					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
-											  pos_x, 0.25*glob.param.canvas_height*glob.param.force_intensity_scale);
+											  pos_x, 0.25*glob.param.canvas_height);
 					break;
 				case "f_r":
 				case "m_r":
@@ -123,8 +160,8 @@ $("#zone_drop_barre").droppable({
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
 					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
-											  pos_x, 0.25*glob.param.canvas_height*glob.param.force_intensity_scale,
-											  pos_x+largeur, 0.25*glob.param.canvas_height*glob.param.force_intensity_scale);
+											  pos_x, 0.25*glob.param.canvas_height,
+											  pos_x+largeur, 0.25*glob.param.canvas_height);
 					break;
 				default:
 					alert("Erreur : chargement de type inconnu");
@@ -211,13 +248,13 @@ function renouveller_interaction()
 			if( elt.hasClass("ch_f_c") || elt.hasClass("ch_m_c") )
 			{
 				poutre.modifier_chargement(elt[0], "Y", pos_x,
-					elt.height()*glob.param.force_intensity_scale); // TODO changement d'axe ; intégrer changement d'intensité
+					elt.height()); // TODO changement d'axe ; intégrer changement d'intensité
 				// console.log(poutre.chargements.get(elt[0]).x0); // DEBUG
 			}
 			if( elt.hasClass("ch_f_r") || elt.hasClass("ch_m_r") )
 			{
 				poutre.modifier_chargement(elt[0], "Y", pos_x,
-					elt.height()*glob.param.force_intensity_scale, pos_x+elt.width()); // TODO changement d'axe ; intégrer changement d'intensité
+					elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer changement d'intensité
 				// console.log( [ poutre.chargements.get(elt[0]).x0 , poutre.chargements.get(elt[0]).x1 ] ); // DEBUG
 			}
 			if( elt.hasClass("cl_instance") )
@@ -241,7 +278,7 @@ function renouveller_interaction()
 			var elt = ui.element;
 			var pos_x = traitement_pos_x(elt);
 			poutre.modifier_chargement(elt[0], "Y", pos_x,
-				elt.height()*glob.param.force_intensity_scale, pos_x+elt.width()); // TODO changement d'axe ; intégrer les chargement affines
+				elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer les chargement affines
 
 			update_defo();
 		}
@@ -255,7 +292,7 @@ function renouveller_interaction()
 			var elt = ui.element;
 			var pos_x = traitement_pos_x(elt);
 			poutre.modifier_chargement(elt[0], "Y", pos_x,
-				elt.height()*glob.param.force_intensity_scale); // TODO changement d'axe ; intégrer les chargement affines
+				elt.height()); // TODO changement d'axe ; intégrer les chargement affines
 
 			update_defo();
 		}
@@ -267,7 +304,7 @@ function renouveller_interaction()
 		// var elt = $(handle.target);
 		// var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 		// poutre.modifier_chargement(elt[0], "Y", pos_x,
-		// 	-elt.height()*glob.param.force_intensity_scale); // TODO changement d'axe ; intégrer les chargement affines
+		// 	-elt.height()); // TODO changement d'axe ; intégrer les chargement affines
 		// update_defo();
 	});
 }
@@ -284,7 +321,7 @@ function traitement_pos_x(elt)
 	}
 	if( pos_x > glob.param.canvas_width - glob.param.beam_ends_offset )
 	{
-		pos_x = glob.param.canvas_width - glob.param.beam_ends_offset;
+		pos_x = glob.param.canvas_width - glob.param.beam_ends_offset-3;
 	}
 
 	return pos_x;
