@@ -432,8 +432,8 @@ function Poutre()
 		}
 		else
 		{
-			var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * glob.param.defo_amp_max; // TODO selon la marge
-			var amp_v = 1 / self.v.abs().max() * H/2 * glob.param.defo_amp_max;
+			var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * glob.param.amp_max_defo; // TODO selon la marge
+			var amp_v = 1 / self.v.abs().max() * H/2 * glob.param.amp_max_defo;
 			if( !isFinite(amp_v) ) amp_v = 0; // dessiner une poutre plate si l'ampitude est infinie
 			// Limiteur d'échelle
 			amp_v = Math.min(amp_v,3e3); // TODO limite arbitraire
@@ -454,6 +454,93 @@ function Poutre()
 
 		// Style du trait et dessin
 		ctx.strokeStyle = "black";
+		ctx.lineWidth = glob.param.defo_epaisseur;
+
+		// Dessin
+		ctx.stroke();
+	}
+
+	self.dessiner_effort = function(canvas,type)
+	{
+		var ctx = canvas.getContext("2d");
+		var W = canvas.width;
+		var H = canvas.height;
+		ctx.clearRect(0,0, W,H);
+
+		// Choix de l'effort
+		switch(type)
+		{
+			case "N":
+				var effort = self.effort_N;
+				var amp_fixee = glob.param.amp_N;
+				break;
+			case "T":
+				var effort = self.effort_T;
+				var amp_fixee = glob.param.amp_T;
+				break;
+			case "M":
+				var effort = self.effort_M;
+				var amp_fixee = glob.param.amp_M;
+				break;
+			default:
+				console.log("Erreur : type d'effort non reconnu (rdm.js : Poutre.dessin_effort)")
+		}
+
+		// Amplitudes
+		if( glob.param.amplitude_fixee )
+		{
+			var amp = amp_fixee;
+		}
+		else
+		{
+			var amp = 1 / effort.abs().max() * H/2 * glob.param.amp_max_effort;
+			if( !isFinite(amp) ) amp = 0; // dessiner une poutre plate si l'ampitude est infinie
+			// Limiteur d'échelle
+			amp = Math.min(amp,3e3); // TODO limite arbitraire
+
+			console.log("amp_"+type+" " + amp);
+
+			// Mise à jour de l'objet global
+			switch(type)
+			{
+				case "N":
+					glob.param.amp_N = amp;
+					break;
+				case "T":
+					glob.param.amp_T = amp;
+					break;
+				case "M":
+					glob.param.amp_M = amp;
+					break;
+				default:
+					console.log("Erreur : type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (2)")
+			}
+			
+		}
+
+		// Définition du tracé
+		ctx.beginPath()
+		ctx.moveTo(glob.param.beam_ends_offset, H/2 - effort[0] * amp);
+		for (var i = 1; i < effort.length; i++) {
+			ctx.lineTo((glob.param.beam_ends_offset + i)/(glob.canvas.width/canvas.width), H/2 - effort[i] * amp );
+		};
+
+		// Style du trait et dessin
+		switch(type)
+		{
+			case "N":
+				ctx.strokeStyle = "red";
+				break;
+			case "T":
+				ctx.strokeStyle = "green";
+				break;
+			case "M":
+				ctx.strokeStyle = "blue";
+				break;
+			default:
+				console.log("Erreur : type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (3)")
+		}
+		
 		ctx.lineWidth = glob.param.defo_epaisseur;
 
 		// Dessin

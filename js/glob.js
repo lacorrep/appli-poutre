@@ -12,7 +12,11 @@ glob.param = {
 	beam_ends_offset: NaN, // distance (en pixels) entre le bord de la zone de dessin et chaque extrêmité de la poutre
 	amp_u: 1, // amplitude de la déformée horizontale
 	amp_v: 10, // amplitude de la déformée verticale
-	defo_amp_max: 0.85, // amplitude maximale de la déformée en % de la hauteur du canvas
+	amp_N: 1, // amplitude de l'effort normal
+	amp_T: 1, // amplitude de l'effort tranchant
+	amp_M: 1, // amplitude de l'effort de flexion
+	amp_max_defo: 0.85, // amplitude maximale de la déformée en % de la hauteur du canvas
+	amp_max_effort: 0.9, // amplitude maximale des diagrammes des efforts intérieurs en % de la hauteur du canvas
 	defo_epaisseur: 3, // épaisseur du trait de la déformée en px
 	force_intensity_scale: 5, // force maximale pour une hauteur de la moitié du canvas
 	moment_intensity_scale: 2, // moment maximal pour une hauteur de la moitié du canvas

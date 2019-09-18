@@ -49,4 +49,5 @@ Application web sur les poutres d'Euler-Bernoulli pour expérimenter avec les li
 * 29/01/2018 : 1
 * 30/01/2018 : 2
 * 04/02/2018 : 5
-* 05/02/2018 : 2
+* 05/02/2018 : 3
+* 06/06/2019 : 1

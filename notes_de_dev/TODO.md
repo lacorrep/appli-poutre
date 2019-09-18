@@ -1,6 +1,7 @@
 ﻿# En cours
 
 * Agrandir les images des liaisons.
+* Liaisons appui et pivot : c'est la même chose ! Il faut dessiner des roulettes
 * Le double-clic doit inverser le sens de l'effort.
 * `resizable` : appliquer `glob.param.resize_minWidth`
 * Appliquer `glob.param.resizeTol` au CSS de jQueryUI `.ui-resizable-handle.ui-resizable-n`
@@ -11,6 +12,7 @@
 
 # Bugs connus
 
+* "Fixer l'échelle" ne se met plus à jour après avoir été activé 1 fois.
 * Si on place un encastrement dans un coin et que l'on place un effort du côté le moins long, la déformée derrière l'encastrement est linéaire au lieu d'être constante et nulle. ! L'échelle devient énorme (donc déplacement très faibles), mais c'est avant tout un problème au niveau des efforts / de l'intégration.
 * Si on place un pivot bien à gauche et un appui au-delà de la moitié de la poutre vers la droite, quand on place une force concentrée (orientée vers le haut), la déformée est décroissante.
 * Sur des petites fenêtres, les titres `h4` rejettent des mots à la ligne ce qui désaligne les rectangles des efforts.
@@ -27,6 +29,7 @@
 
 # Améliorations futures
 
+* Afficher 
 * 100% compatible mobile (désactiver le scroll)
 * Traction / compression (forces horizontales, amplitude de la déformée...)
 * Chargements répartis variables (linéaires)

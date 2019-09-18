@@ -153,6 +153,16 @@ h1
 	background-color: white;
 }
 
+#canvas_effort_N, #canvas_effort_T, #canvas_effort_M
+{
+	/*box-sizing: content-box;*/
+	border: solid black 2px;
+
+	pointer-events: none; /* jamais d'interaction avec le curseur (pas de clic) */
+
+	background-color: white;
+}
+
 
 #bt-info
 {

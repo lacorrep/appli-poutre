@@ -35,6 +35,9 @@ function set_beam_frame()
 	$("#canvas_defo").attr({height: glob.param.canvas_height, width: glob.param.canvas_width})
 	$("#zone_drop_barre").css({height: glob.param.canvas_height, width: glob.param.canvas_width})
 	$("#barre").css({height: glob.param.defo_epaisseur, width: glob.param.canvas_width - 2*glob.param.beam_ends_offset})
+	$("#canvas_effort_N").attr({height: glob.param.canvas_height/2, width: glob.param.canvas_width/3})
+	$("#canvas_effort_T").attr({height: glob.param.canvas_height/2, width: glob.param.canvas_width/3})
+	$("#canvas_effort_M").attr({height: glob.param.canvas_height/2, width: glob.param.canvas_width/3})
 }
 
 
@@ -43,6 +46,9 @@ $(function(){
 
 // Objet DOM Canvas
 glob.canvas = $("#canvas_defo")[0];
+glob.canvas_effort_N = $("#canvas_effort_N")[0];
+glob.canvas_effort_T = $("#canvas_effort_T")[0];
+glob.canvas_effort_M = $("#canvas_effort_M")[0];
 
 // Ajuster les éléments de la page
 set_beam_frame();
@@ -219,6 +225,9 @@ function update_defo()
 		poutre.compute_defo(glob.canvas);
 		// Redessiner la poutre
 		poutre.dessiner_defo(glob.canvas);
+		poutre.dessiner_effort(glob.canvas_effort_N,"N");
+		poutre.dessiner_effort(glob.canvas_effort_T,"T");
+		poutre.dessiner_effort(glob.canvas_effort_M,"M");
 	}
 	else
 	{
@@ -301,11 +310,11 @@ function renouveller_interaction()
 	// Double-clic (jQuery standard)
 	$( ".ch_instance" ).dblclick(function(handle) {
 		console.log( "Double-clic !" );
-		// var elt = $(handle.target);
-		// var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
-		// poutre.modifier_chargement(elt[0], "Y", pos_x,
-		// 	-elt.height()); // TODO changement d'axe ; intégrer les chargement affines
-		// update_defo();
+		var elt = $(handle.target);
+		var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+		poutre.modifier_chargement(elt[0], "Y", pos_x,
+			-elt.height()); // TODO changement d'axe ; intégrer les chargement affines
+		update_defo();
 	});
 }
 
