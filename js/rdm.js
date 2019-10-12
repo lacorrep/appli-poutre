@@ -49,6 +49,7 @@ function Chargement(objDOM, type, axe, x0, f0, x1, f1)
 // x1 <Number> optionnel : position en pixels de la fin de l'effort la zone de dessin
 // f1 <Number> optionnel : intensité de la force en x1 // TODO
 {
+	// NB : x0 < x1 car jQuery UI ne le permet pas autrement
 	x0 -= glob.param.beam_ends_offset;
 	x1 -= glob.param.beam_ends_offset;
 
@@ -64,14 +65,12 @@ function Chargement(objDOM, type, axe, x0, f0, x1, f1)
 	this.f0 = f0;
 	this.x1 = x1 || x0; // optionnel
 	this.f1 = f1 || f0; // optionnel
-
-	// NB : x0 < x1 car jQuery UI ne le permet pas autrement
 }
 
 function Poutre()
 // Représente une poutre.
 {
-	var self = this;
+	var self = this; // règle certains problèmes lorsqu'on manipule des variables dans des "fonctions dans des fonctions" (qu'on appelle des "méthodes")
 
 	self.ES = 100; // raideur en traction / compression
 	self.EI = 10; // raideur en flexion
@@ -89,6 +88,11 @@ function Poutre()
 	// Map d'objets Liaison et Chargements
 	self.liaisons = new Map();
 	self.chargements = new Map();
+
+	// Stockage des efforts de liaison une fois calculés pour pouvoir les dessiner
+	self.reactions = [];
+	self.x_R_flex = [];
+	self.type_R_flex = [];
 
 	self.isostatique = function()
 	// Renvoie true si la structure est isostatique, false sinon.
@@ -167,17 +171,18 @@ function Poutre()
 		console.log(" # ====== UPDATE_DEF ========");
 
 		var nx = canvas.width - 2*glob.param.beam_ends_offset; // nombre de points du domaine
-		var dx = 1 / nx; // pas entre les points = longueur poutre (= 1) / nombre de points
+		var Dx = 1/9; // 9 car c'est la largeur en pixels d'une force concentrée. Devient l'unité de longueur par défaut.
 
 		if( !self.isostatique() )
 		{
-			console.log("Erreur (Poutre.compute_defo) : non isostatique")
+			console.log("Poutre.compute_defo : non isostatique")
+
 			return 0
 		}
 
-		if( self.chargements.size === 0 )
+		if( self.chargements.size === 0 ) // aucun chargement sur la poutre
 		{
-			// Aucun effort, rien ne se passe.
+			// Aucun effort, rien ne se passe. Déformée nulle.
 			for (var i = 0; i < nx; i++) {
 				self.effort_N[i] = 0;
 				self.effort_T[i] = 0;
@@ -186,10 +191,20 @@ function Poutre()
 				self.v[i] = 0;
 				self.theta[i] = 0;
 			};
+			self.reactions = [];
 			return 1
 		}
 
-		// Calculer les vecteurs de sollicitations
+		//////////////////// Calculer les vecteurs de sollicitations ////////////////////
+
+		// Échelles des forces
+		// le calcul n'est pas optimisé pour bien montrer quelles sont les opérations géométriques effectuées.
+		// un bloc de hauteur H/4 correspond à 100% d'une unité sur l'échelle
+		var F_c_scale = 1/(glob.canvas.height/4) * glob.param.force_intensity_scale;
+		var F_r_scale = 1/(glob.canvas.height/4) * glob.param.force_intensity_scale * Dx; 
+		var M_c_scale = 1/(glob.canvas.height/4) * glob.param.moment_intensity_scale;
+		var M_r_scale = 1/(glob.canvas.height/4) * glob.param.moment_intensity_scale * Dx;
+
 		// Tableaux des efforts extérieurs appliqués sur chaque noeud
 		// FX(i) est la valeur de la force exercée par l'extérieur sur le point numéro i de la poutre
 		FX = [];
@@ -203,62 +218,61 @@ function Poutre()
 		};
 		for(var chargement of self.chargements.values())
 		{
-			// TODO il faut soustraire glob.param.beam_ends_offset à tous les x... ou écrire directement le bon x dans les objets Liaison / Chargement
-			// console.log(chargement.type); // DEBUG
+			// console.log(chargement); // DEBUG
 			switch( chargement.type )
 			{
 				case "f_c":
 					if( chargement.axe === "X" )
-						FX[chargement.x0] += chargement.f0 * glob.param.force_intensity_scale;
+						FX[chargement.x0] += chargement.f0 * F_c_scale;
 					else // Y
-						FY[chargement.x0] += chargement.f0 * glob.param.force_intensity_scale;
+						FY[chargement.x0] += chargement.f0 * F_c_scale;
 					break;
 
-				case "f_r":
+				case "f_r":/**/
 					if( chargement.axe === "X" )
 					{
 						for(var xi = chargement.x0; (xi < chargement.x1) && (xi < nx); xi++)
-							FX[xi] += chargement.f0 * dx * glob.param.force_intensity_scale; // TODO interpolation entre f0 et f1
+							FX[xi] += chargement.f0 * F_r_scale; // TODO interpolation entre f0 et f1
 					}
 					else // Y
 					{
 						for(var xi = chargement.x0; (xi < chargement.x1) && (xi < nx); xi++)
-							FY[xi] += chargement.f0 * dx * glob.param.force_intensity_scale; // TODO interpolation
+							FY[xi] += chargement.f0 * F_r_scale; // TODO interpolation
 					}
 					break;
 
 				case "m_c":
-					M[chargement.x0] += chargement.f0 * glob.param.moment_intensity_scale;
+					M[chargement.x0] += chargement.f0 * M_c_scale;
 					break;
 
 				case "m_r":
 					for(var xi = chargement.x0; (xi < chargement.x1) && (xi < nx); xi++)
-						M[xi] += chargement.f0 * dx * glob.param.moment_intensity_scale; // TODO interpolation
+						M[xi] += chargement.f0 * M_r_scale; // TODO interpolation
 					break;
+				default:
+					console.error("Poutre.compute_defo : type de chargment " + chargement.type + " inconnu.");
 			}
 		}
 
-		// PFS au point tout à gauche de la poutre
+		//////////////////// PFS ////////////////////
 
-		// Somme des forces : FX.sum(),FY.sum()
+		// Somme des forces : FX.sum() et FY.sum() (calculé plus loin)
 
-		// Somme des moments en A
+		// Somme des moments (calculés au point tout à gauche de la poutre)
 		M_A = 0;
 		for (var i = 0; i < nx; i++)
 		{
-			M_A += FY[i] * i*dx; // force * bras de levier (<- efforts appliqués à gauche des tronçons, 1px = 1 tronçon)
+			M_A += FY[i] * i*Dx; // force * bras de levier (<- efforts appliqués à gauche des tronçons, 1px = 1 tronçon)
 		}
 		// Moments purs
 		M_A += M.sum(); // somme des moments concentrés et répartis
 
 		// Vecteur des résultantes extérieures
 		var F_ext = [FX.sum(),FY.sum(), M_A]; // Fx, Fy, M_A
-		
-		F_ext
 
 		// Calcule les efforts aux liaisons (traction/compression et flexion découplées)
 		var R0, x_R0; // réaction et postion de la liaison pour la traction-compression
-		var x_R_flex = []; // position des efforts de liaisonsison pour la flexion
+		var x_R_flex = []; // position des efforts de liaison pour la flexion
 		var type_R_flex = []; // type des efforts de liaison pour la flexion
 		var C = [[],[]]; // coefficients du système à résoudre pour l'équilibre de la poutre en flexion
 		for (var liaison of self.liaisons.values())
@@ -275,7 +289,7 @@ function Poutre()
 				x_R_flex.push( liaison.x )
 				type_R_flex.push( "force" )
 				C[0].push(1)
-				C[1].push(liaison.x*dx) // attention à bien convertir en mètres : *dx
+				C[1].push(liaison.x*Dx) // attention à bien convertir en mètres : *Dx
 			}
 			if( liaison.bloque[2] )
 			{
@@ -300,8 +314,8 @@ function Poutre()
 		// console.log([type_R_flex[0], type_R_flex[1]])
 		// console.log("=== Position des efforts R1 R2")
 		// console.log([x_R_flex[0], x_R_flex[1]])
-		console.log("R1 : "+type_R_flex[0]+" "+R1+" en x = "+x_R_flex[0]);
-		console.log("R2 : "+type_R_flex[1]+" "+R2+" en x = "+x_R_flex[1]);
+		console.log("R1 : "+type_R_flex[0]+", intensité "+R1+" en x = "+x_R_flex[0]);
+		console.log("R2 : "+type_R_flex[1]+", intensité "+R2+" en x = "+x_R_flex[1]);
 
 
 
@@ -309,7 +323,7 @@ function Poutre()
 		// on peut déterminer les efforts intérieurs par coupure
 
 
-		// Efforts intérieurs
+		//////////////////// Efforts intérieurs ////////////////////
 
 		// Réinitialisation des efforts intérieurs
 		self.effort_N = [];
@@ -340,12 +354,13 @@ function Poutre()
 			if( i === x_R_flex[0] && type_R_flex[0] === "moment" ) { S_M -= R1; }
 			if( i === x_R_flex[1] && type_R_flex[1] === "moment" ) { S_M -= R2; }
 			// Intégration de l'effort tranchant et ajout des moments purs
-			S_M += arrondir( -M[i] - self.effort_T[i] * dx , 3);
+			S_M += arrondir( -M[i] - self.effort_T[i] * Dx , 3);
 			self.effort_M[i] = S_M;
 		}
 		//  il faut intégrer T de droite à gauche et cumuler M de droite à gauche.
 
-		// Calcul de la déformée
+
+		//////////////////// Calcul de la déformée ////////////////////
 
 		// Horizontale : on intègre epsilon = N/ES
 		self.u = [];
@@ -365,7 +380,7 @@ function Poutre()
 		self.theta = [];
 		var S_theta = 0;
 		for (var i = 0; i < nx; i++) {
-			S_theta += self.effort_M[i] * dx / self.EI;
+			S_theta += self.effort_M[i] * Dx / self.EI;
 			self.theta.push( S_theta );
 		}
 
@@ -379,8 +394,8 @@ function Poutre()
 		// Seconde intégration (v' -> v)
 		var S_v = 0;
 		for (var i = 0; i < nx; i++) {
-			S_v += self.theta[i]*dx;
-			// console.log(1e7 * self.theta[i]*dx); // DEBUG
+			S_v += self.theta[i]*Dx;
+			// console.log(1e7 * self.theta[i]*Dx); // DEBUG
 			self.v.push( S_v );
 		}
 
@@ -413,6 +428,11 @@ function Poutre()
 				self.v[i] -= deplacement_a_soustraire;
 		}
 
+		// Stockage pour pouvoir tracer les efforts de liaison correctement
+		self.reactions = [R1, R2]; // inconnues de liaison
+		self.x_R_flex = x_R_flex;
+		self.type_R_flex = type_R_flex;
+
 		console.log(" # ====== FIN UPDATE_DEF ========");
 		return 1
 	}
@@ -423,6 +443,10 @@ function Poutre()
 		var W = canvas.width;
 		var H = canvas.height;
 		ctx.clearRect(0,0, W,H);
+
+		// Style du trait et dessin
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = glob.param.defo_epaisseur;
 
 		// Amplitudes
 		if( glob.param.amplitude_fixee )
@@ -452,15 +476,11 @@ function Poutre()
 			ctx.lineTo(glob.param.beam_ends_offset + i + self.u[i] * amp_u, H/2 - self.v[i] * amp_v );
 		};
 
-		// Style du trait et dessin
-		ctx.strokeStyle = "black";
-		ctx.lineWidth = glob.param.defo_epaisseur;
-
 		// Dessin
 		ctx.stroke();
 	}
 
-	self.dessiner_effort = function(canvas,type)
+	self.dessiner_efforts_internes = function(canvas,type)
 	{
 		var ctx = canvas.getContext("2d");
 		var W = canvas.width;
@@ -483,7 +503,7 @@ function Poutre()
 				var amp_fixee = glob.param.amp_M;
 				break;
 			default:
-				console.log("Erreur : type d'effort non reconnu (rdm.js : Poutre.dessin_effort)")
+				console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort)")
 		}
 
 		// Amplitudes
@@ -513,14 +533,13 @@ function Poutre()
 					glob.param.amp_M = amp;
 					break;
 				default:
-					console.log("Erreur : type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (2)")
+					console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (2)")
 			}
-			
 		}
 
 		// Définition du tracé
 		ctx.beginPath()
-		ctx.moveTo(glob.param.beam_ends_offset, H/2 - effort[0] * amp);
+		ctx.moveTo(glob.param.beam_ends_offset/(glob.canvas.width/canvas.width), H/2 - effort[0] * amp);
 		for (var i = 1; i < effort.length; i++) {
 			ctx.lineTo((glob.param.beam_ends_offset + i)/(glob.canvas.width/canvas.width), H/2 - effort[i] * amp );
 		};
@@ -538,13 +557,62 @@ function Poutre()
 				ctx.strokeStyle = "blue";
 				break;
 			default:
-				console.log("Erreur : type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (3)")
+				console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (3)")
 		}
 		
 		ctx.lineWidth = glob.param.defo_epaisseur;
 
 		// Dessin
 		ctx.stroke();
+	}
+
+	self.dessiner_efforts_liaisons = function(canvas)
+	{
+		if( self.reactions.length < 1 ) return; // on arrête tout s'il n'y a pas d'efforts de réaction
+
+		var ctx = canvas.getContext("2d");
+
+		var H = canvas.height;
+		
+		ctx.strokeStyle = "rgba(255,0,255,0.3)";
+
+		var amp_force = (glob.canvas.height/4) / glob.param.force_intensity_scale;
+		var amp_moments = (glob.canvas.height/4) / glob.param.moment_intensity_scale / 100;
+
+		for(var i = 0; i <= 1; i++)
+		{
+			var X = glob.param.beam_ends_offset + self.x_R_flex[i];
+			if(self.type_R_flex[i] === "force")
+			{
+				ctx.beginPath();
+				canvas_arrow(ctx, X,H/2, X,H/2-amp_force*self.reactions[i]);
+				ctx.stroke();
+			}
+			else if( self.type_R_flex[i] === "moment" )
+			{
+				// ATTENTION ! LES ANGLES DOIVENT ÊTRE DONNÉS DANS LE SENS OPPOSÉ
+				var rayon = Math.abs(amp_moments*self.reactions[i]);
+				ctx.beginPath();
+				if( self.reactions[i] >= 0 )
+				{
+					ctx.arc(X, H/2, rayon, 1.3*Math.PI/2, 0);
+					canvas_arrow(ctx, X+rayon,H/2-1, X+rayon,H/2+5);
+				}
+				else
+				{
+					ctx.arc(X, H/2, rayon, -0.7*Math.PI/2, Math.PI);
+					canvas_arrow(ctx, X-rayon,H/2+1, X-rayon,H/2-5);
+				}
+
+				ctx.stroke();
+			}
+			else
+			{
+				console.log("DEBUG (rdm.js : Poutre.dessiner_efforts_liaisons) type d'effort inconnu : "
+					+ self.type_R_flex[i] + " (se produit lorsqu'il n'y a pas encore de forces)")
+			}
+
+		}
 	}
 }
 

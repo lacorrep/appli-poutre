@@ -2,12 +2,6 @@
 var poutre = new Poutre();
 
 
-function debug()
-// Active les outils de débugage
-{
-	$("#debug-tools").css("display","block");
-}
-
 function set_beam_frame()
 // Mise en forme de la zone de dessin
 {
@@ -38,6 +32,9 @@ function set_beam_frame()
 	$("#canvas_effort_N").attr({height: glob.param.canvas_height/2, width: glob.param.canvas_width/3})
 	$("#canvas_effort_T").attr({height: glob.param.canvas_height/2, width: glob.param.canvas_width/3})
 	$("#canvas_effort_M").attr({height: glob.param.canvas_height/2, width: glob.param.canvas_width/3})
+
+	// Bords de lignes arrondis
+	var ctx = glob.canvas.getContext("2d"); ctx.lineCap = 'round';
 }
 
 
@@ -49,6 +46,7 @@ glob.canvas = $("#canvas_defo")[0];
 glob.canvas_effort_N = $("#canvas_effort_N")[0];
 glob.canvas_effort_T = $("#canvas_effort_T")[0];
 glob.canvas_effort_M = $("#canvas_effort_M")[0];
+
 
 // Ajuster les éléments de la page
 set_beam_frame();
@@ -62,7 +60,7 @@ set_beam_frame();
 
 
 // Pas de sélection du texte dans le titre ou les menus
-$("h1,#menuLiaisons,#menuChargements").disableSelection();
+$("h1,#menuLiaisons,#menuChargements,label").disableSelection();
 
 // Explication de ce qu'est un ddl avec la balise abbr
 $("ddl").replaceWith('<abbr title="Degré de liberté">ddl</abbr>')
@@ -70,7 +68,7 @@ $("ddl").replaceWith('<abbr title="Degré de liberté">ddl</abbr>')
 
 // Drag & drop Liaisons
 
-$(".cl_distributeur").draggable({
+$(".cl_distributeur").draggable({ // TODO les objets dragged ne s'affichent pas au-dessus du canvas
 	snap: ".cl_instance, .cl_instance", // s’accroche aux autres CL
 	snapTolerance: glob.param.snapTol,
 	revert: true,
@@ -81,7 +79,7 @@ $(".cl_distributeur").draggable({
 
 // Drag & drop Chargements
 
-$(".ch_distributeur").draggable({
+$(".ch_distributeur").draggable({ // TODO les objets dragged ne s'affichent pas au-dessus du canvas
 	snap: ".cl_instance, .ch_instance", // s’accroche aux autres CL
 	snapTolerance: glob.param.snapTol,
 	revert: true,
@@ -101,15 +99,7 @@ $("#zone_drop_barre").droppable({
 		// - le distributeur est déposé sur la zone
 		// - une instance rentre ou sort dans la zone (suppression)
 
-		var pos_x = Math.floor( ui.draggable.offset().left - $(this).offset().left );
-		if( pos_x < glob.param.beam_ends_offset )
-		{
-			pos_x = glob.param.beam_ends_offset;
-		}
-		if( pos_x > glob.param.canvas_width - glob.param.beam_ends_offset )
-		{
-			pos_x = glob.param.canvas_width - glob.param.beam_ends_offset-3; // TODO décalage arbitraire
-		}
+		var pos_x = traitement_pos_x(ui.draggable);
 
 		// Si c'est une instance à déplacer
 
@@ -138,7 +128,7 @@ $("#zone_drop_barre").droppable({
 					poutre.ajouter_liaison(eltDOM, nom_liaison, "Y", pos_x); // TODO axe
 					break;
 				default:
-					alert("Erreur : liaison de type inconnu");
+					console.error("control.js $(\"#zone_drop_barre\").droppable : Liaison de type inconnu");
 			}
 			renouveller_interaction();
 		}
@@ -156,7 +146,7 @@ $("#zone_drop_barre").droppable({
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
 					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
-											  pos_x, 0.25*glob.param.canvas_height);
+											  pos_x, glob.param.canvas_height/4);
 					break;
 				case "f_r":
 				case "m_r":
@@ -166,11 +156,11 @@ $("#zone_drop_barre").droppable({
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
 					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
-											  pos_x, 0.25*glob.param.canvas_height,
-											  pos_x+largeur, 0.25*glob.param.canvas_height);
+											  pos_x, glob.param.canvas_height/4,
+											  pos_x+largeur, glob.param.canvas_height/4);
 					break;
 				default:
-					alert("Erreur : chargement de type inconnu");
+					console.error("control.js $(\"#zone_drop_barre\").droppable : Chargement de type inconnu");
 			}
 			renouveller_interaction();
 		}
@@ -225,14 +215,20 @@ function update_defo()
 		poutre.compute_defo(glob.canvas);
 		// Redessiner la poutre
 		poutre.dessiner_defo(glob.canvas);
-		poutre.dessiner_effort(glob.canvas_effort_N,"N");
-		poutre.dessiner_effort(glob.canvas_effort_T,"T");
-		poutre.dessiner_effort(glob.canvas_effort_M,"M");
+		// Dessiner les inconnues de liaison
+		if( glob.param.showLinkingReactions ) poutre.dessiner_efforts_liaisons(glob.canvas);
+		// Canvas avec les efforts internes
+		poutre.dessiner_efforts_internes(glob.canvas_effort_N,"N");
+		poutre.dessiner_efforts_internes(glob.canvas_effort_T,"T");
+		poutre.dessiner_efforts_internes(glob.canvas_effort_M,"M");
 	}
 	else
 	{
 		$("#estIso").html("n'est pas");
 		$("#zone_drop_barre, #canvas_defo").addClass("frozen");
+
+		// Clean canvas
+		// var ctx = glob.canvas.getContext("2d"); ctx.clearRect(0,0, canvas.width,canvas.height);
 	}
 }
 
@@ -249,6 +245,9 @@ function renouveller_interaction()
 		{
 			var elt = $(ui.helper[0]);
 
+			// If the .ch_instance is flipped (has the class .flipped), the force is downward
+			var downward = elt.hasClass("flipped") ? -1 : 1;
+
 			// Ne pas traiter les objets en cours de suppression
 			if( elt.hasClass("toBeRemoved") ) return;
 
@@ -257,13 +256,13 @@ function renouveller_interaction()
 			if( elt.hasClass("ch_f_c") || elt.hasClass("ch_m_c") )
 			{
 				poutre.modifier_chargement(elt[0], "Y", pos_x,
-					elt.height()); // TODO changement d'axe ; intégrer changement d'intensité
+					downward*elt.height()); // TODO changement d'axe ; intégrer changement d'intensité
 				// console.log(poutre.chargements.get(elt[0]).x0); // DEBUG
 			}
 			if( elt.hasClass("ch_f_r") || elt.hasClass("ch_m_r") )
 			{
 				poutre.modifier_chargement(elt[0], "Y", pos_x,
-					elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer changement d'intensité
+					downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer changement d'intensité
 				// console.log( [ poutre.chargements.get(elt[0]).x0 , poutre.chargements.get(elt[0]).x1 ] ); // DEBUG
 			}
 			if( elt.hasClass("cl_instance") )
@@ -285,9 +284,11 @@ function renouveller_interaction()
 		stop: function(evt,ui)
 		{
 			var elt = ui.element;
+			// If the .ch_instance is flipped (has the class .flipped), the force is downward
+			var downward = elt.hasClass("flipped") ? -1 : 1;
 			var pos_x = traitement_pos_x(elt);
 			poutre.modifier_chargement(elt[0], "Y", pos_x,
-				elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer les chargement affines
+				downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; intégrer les chargement affines
 
 			update_defo();
 		}
@@ -299,9 +300,11 @@ function renouveller_interaction()
 		stop: function(evt,ui)
 		{
 			var elt = ui.element;
+			// If the .ch_instance is flipped (has the class .flipped), the force is downward
+			var downward = elt.hasClass("flipped") ? -1 : 1;
 			var pos_x = traitement_pos_x(elt);
 			poutre.modifier_chargement(elt[0], "Y", pos_x,
-				elt.height()); // TODO changement d'axe ; intégrer les chargement affines
+				downward*elt.height()); // TODO changement d'axe ; intégrer les chargement affines
 
 			update_defo();
 		}
@@ -309,11 +312,16 @@ function renouveller_interaction()
 
 	// Double-clic (jQuery standard)
 	$( ".ch_instance" ).dblclick(function(handle) {
-		console.log( "Double-clic !" );
+		console.log( "DEBUG Double-clic !" );
 		var elt = $(handle.target);
 		var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+		// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
+		$(handle.target).toggleClass("flipped");
+		// If flipped, the force is downward
+		var downward = $(handle.target).hasClass("flipped") ? -1 : 1;
 		poutre.modifier_chargement(elt[0], "Y", pos_x,
-			-elt.height()); // TODO changement d'axe ; intégrer les chargement affines
+				downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; implémenter/intégrer? les chargement affines
+
 		update_defo();
 	});
 }
@@ -330,7 +338,7 @@ function traitement_pos_x(elt)
 	}
 	if( pos_x > glob.param.canvas_width - glob.param.beam_ends_offset )
 	{
-		pos_x = glob.param.canvas_width - glob.param.beam_ends_offset-3;
+		pos_x = glob.param.canvas_width - glob.param.beam_ends_offset-3; // TODO le décalage de -3 est arbitraire. dû à la largeur du contour ?
 	}
 
 	return pos_x;

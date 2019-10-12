@@ -18,6 +18,10 @@ Application web sur les poutres d'Euler-Bernoulli pour expérimenter avec les li
 * [jQuery UI Touch Punch](http://touchpunch.furf.com/)
 * [Bootstrap](https://getbootstrap.com/)
 
+## Bugs connus / To do list
+* Les liaisons et les forces sont invisibles lorsqu'elles sortent de `div#menus`
+* Si on place une force concentrée avant de placer un encastrement, on ne peut plus retourner la force en double-cliquant.
+* Parfois l'échelle et les erreurs d'arrondis font que la déformée n'est pas nulle du côté d'un encastrement où il n'y a pas d'efforts.
 
 ## Liens utiles
 
