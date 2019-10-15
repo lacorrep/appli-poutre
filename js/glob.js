@@ -20,7 +20,7 @@ glob.param = {
 	defo_epaisseur: 4, // épaisseur du trait de la déformée (en pixels)
 	drag_opacity: 0.6, // opacité des éléments quand ils sont "dragged"
 	force_intensity_scale: 5, // force pour un flèche d'une hauteur d'un quart du canvas (conversion pixels -> Newton) // ATTENTION : pas ce qui est fait actuellement
-	moment_intensity_scale: 2, // moment pour un flèche d'une hauteur d'un quart du canvas (conversion pixels -> Newton) // ATTENTION : pas ce qui est fait actuellement
+	moment_intensity_scale: 100, // moment pour un flèche d'une hauteur d'un quart du canvas (conversion pixels -> Newton) // ATTENTION : pas ce qui est fait actuellement
 	resize_minWidth: 10, // plus petite épaisseur d'un chargement réparti // TODO
 	resizeTol: 10, // distance minimale entre le curseur et le bord d'un chargement pour modifier son intensité / sa zone d'effet
 	showLinkingReactions: false, // montrer les efforts de liaison
