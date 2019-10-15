@@ -315,10 +315,7 @@ function renouveller_interaction()
 	// SUR MOBILE : pression longue
 	if( isMobile )
 	{	
-		$('.ch_instance').longpress(function(e){
-			// short click
-			return
-		}, function(e) {
+		$('.ch_instance').longpress(function(e) {
 			var elt = $(e.target);
 			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 			// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
@@ -329,6 +326,9 @@ function renouveller_interaction()
 					downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; implémenter/intégrer? les chargement affines
 
 			update_defo();
+		}, function(e){
+			// short click
+			return
 		});
 	}
 	else
