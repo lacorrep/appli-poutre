@@ -16,6 +16,7 @@ Application web sur les poutres d'Euler-Bernoulli pour expérimenter avec les li
 * [jQuery](http://jquery.com/)
 * [jQueryUI](http://jqueryui.com/)
 * [jQuery UI Touch Punch](http://touchpunch.furf.com/)
+* [jQuery longpress](https://github.com/vaidik/jquery-longpress)
 * [Bootstrap](https://getbootstrap.com/)
 
 ## Bugs connus / To do list

@@ -12,6 +12,7 @@ function set_beam_frame()
 		// Petit
 		glob.param.canvas_ratio_width = 0.95;
 		glob.param.beam_ends_offset = 8;
+		glob.param.canvas_ratio_height = 0.50;
 		$( "#dialog-info" ).dialog({minWidth: 300});
 	}
 	else
@@ -19,6 +20,7 @@ function set_beam_frame()
 		// Grand
 		glob.param.canvas_ratio_width = 0.65;
 		glob.param.beam_ends_offset = 30;
+		glob.param.canvas_ratio_height = 0.40;
 		$( "#dialog-info" ).dialog({minWidth: 600});
 	}
 
@@ -29,9 +31,9 @@ function set_beam_frame()
 	$("#canvas_defo").attr({height: glob.param.canvas_height, width: glob.param.canvas_width})
 	$("#zone_drop_barre").css({height: glob.param.canvas_height, width: glob.param.canvas_width})
 	$("#barre").css({height: glob.param.defo_epaisseur, width: glob.param.canvas_width - 2*glob.param.beam_ends_offset})
-	$("#canvas_effort_N").attr({height: glob.param.canvas_height/2, width: 0.3*glob.param.canvas_width})
-	$("#canvas_effort_T").attr({height: glob.param.canvas_height/2, width: 0.3*glob.param.canvas_width})
-	$("#canvas_effort_M").attr({height: glob.param.canvas_height/2, width: 0.3*glob.param.canvas_width})
+	$("#canvas_effort_N").attr({height: 0.4*glob.param.canvas_height, width: 0.3*glob.param.canvas_width})
+	$("#canvas_effort_T").attr({height: 0.4*glob.param.canvas_height, width: 0.3*glob.param.canvas_width})
+	$("#canvas_effort_M").attr({height: 0.4*glob.param.canvas_height, width: 0.3*glob.param.canvas_width})
 
 	// Bords de lignes arrondis
 	var ctx = glob.canvas.getContext("2d"); ctx.lineCap = 'round';
@@ -310,20 +312,41 @@ function renouveller_interaction()
 		}
 	})
 
-	// Double-clic (jQuery standard)
-	$( ".ch_instance" ).dblclick(function(handle) {
-		console.log( "DEBUG Double-clic !" );
-		var elt = $(handle.target);
-		var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
-		// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
-		$(handle.target).toggleClass("flipped");
-		// If flipped, the force is downward
-		var downward = $(handle.target).hasClass("flipped") ? -1 : 1;
-		poutre.modifier_chargement(elt[0], "Y", pos_x,
-				downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; implémenter/intégrer? les chargement affines
+	// SUR MOBILE : pression longue
+	if( isMobile )
+	{	
+		$('.ch_instance').longpress(function(e){
+			// short click
+			return
+		}, function(e) {
+			var elt = $(e.target);
+			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+			// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
+			elt.toggleClass("flipped");
+			// If flipped, the force is downward
+			var downward = elt.hasClass("flipped") ? -1 : 1;
+			poutre.modifier_chargement(elt[0], "Y", pos_x,
+					downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; implémenter/intégrer? les chargement affines
 
-		update_defo();
-	});
+			update_defo();
+		});
+	}
+	else
+	{
+		// Double-clic (jQuery standard)
+		$( ".ch_instance" ).dblclick(function(handle) {
+			var elt = $(handle.target);
+			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
+			// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
+			elt.toggleClass("flipped");
+			// If flipped, the force is downward
+			var downward = elt.hasClass("flipped") ? -1 : 1;
+			poutre.modifier_chargement(elt[0], "Y", pos_x,
+					downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; implémenter/intégrer? les chargement affines
+
+			update_defo();
+		});
+	}
 }
 
 function traitement_pos_x(elt)
