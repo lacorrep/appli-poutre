@@ -577,33 +577,51 @@ function Poutre()
 		ctx.strokeStyle = "rgba(255,0,255,0.3)";
 
 		var amp_force = (glob.canvas.height/4) / glob.param.force_intensity_scale;
-		var amp_moments = (glob.canvas.height/4) / glob.param.moment_intensity_scale / 100;
+		var amp_moments = (glob.canvas.height/4) / glob.param.moment_intensity_scale / 5;
 
 		for(var i = 0; i <= 1; i++)
 		{
 			var X = glob.param.beam_ends_offset + self.x_R_flex[i];
 			if(self.type_R_flex[i] === "force")
 			{
+				var intensite = amp_force*self.reactions[i];
+				if( Math.abs(intensite) > 0.9*glob.canvas.height/2 )
+				{
+					ctx.lineWidth = glob.param.defo_epaisseur*(1+2*Math.log( Math.abs(intensite)/(0.9*glob.canvas.height/2) ) );
+					intensite = Math.sign(intensite)*0.9*glob.canvas.height/2;
+				}
+				else
+				{
+					ctx.lineWidth = glob.param.defo_epaisseur;
+				}
 				ctx.beginPath();
-				canvas_arrow(ctx, X,H/2, X,H/2-amp_force*self.reactions[i]);
+				canvas_arrow(ctx, X,H/2, X,H/2-intensite); // longueur de la flèche 0.6*Math.abs(self.reactions[i])
 				ctx.stroke();
 			}
 			else if( self.type_R_flex[i] === "moment" )
 			{
 				// ATTENTION ! LES ANGLES DOIVENT ÊTRE DONNÉS DANS LE SENS OPPOSÉ
 				var rayon = Math.abs(amp_moments*self.reactions[i]);
+				if( rayon > 0.9*glob.canvas.height/2 )
+				{
+					ctx.lineWidth = glob.param.defo_epaisseur*(1+2*Math.log( rayon/(0.9*glob.canvas.height/2) ) );
+					rayon = 0.9*glob.canvas.height/2;
+				}
+				else
+				{
+					ctx.lineWidth = glob.param.defo_epaisseur;
+				}
 				ctx.beginPath();
-				if( self.reactions[i] >= 0 )
+				if( self.reactions[i] <= 0 )
 				{
 					ctx.arc(X, H/2, rayon, 1.3*Math.PI/2, 0);
 					canvas_arrow(ctx, X+rayon,H/2-1, X+rayon,H/2+5);
 				}
 				else
 				{
-					ctx.arc(X, H/2, rayon, -0.7*Math.PI/2, Math.PI);
-					canvas_arrow(ctx, X-rayon,H/2+1, X-rayon,H/2-5);
+					ctx.arc(X, H/2, rayon, Math.PI,-3.3*Math.PI/2);
+					canvas_arrow(ctx, X-rayon,H/2-1, X-rayon,H/2+5);
 				}
-
 				ctx.stroke();
 			}
 			else

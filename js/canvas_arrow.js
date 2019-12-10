@@ -1,6 +1,6 @@
-function canvas_arrow(ctx, x_a, y_a, x_b, y_b)
+function canvas_arrow(ctx, x_a, y_a, x_b, y_b, l)
 {
-	var head_length = 15;   // length of arrow's head in pixels
+	var head_length = (typeof l === "undefined") ? 15 : l; // length of arrow's head in pixels
 	var angle = Math.atan2(y_b-y_a,x_b-x_a);
 	ctx.moveTo(x_a, y_a);
 	ctx.lineTo(x_b, y_b);

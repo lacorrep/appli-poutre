@@ -1,0 +1,11 @@
+Paul Lacorre, doctorant en première année au GeM (laboratoire de mécanique), développe une application web sur les poutres d'Euler-Bernoulli pour expérimenter avec les liaisons et les efforts en temps réel. L'ambition est de créer un outil plus léger et plus simple d'utilisation que le célèbre RDM6 pour enrichir les cours de résistance des matériaux.
+
+Par un simple cliquer-glisser, déposez les liaisons et les chargements sur la poutre. Ajustez directement sur le graphique l'intensité des efforts. Visualisez les efforts de liaison et les diagrammes des efforts intérieurs.
+
+L'application est également conçue pour une utilisation sur mobile et tablettes.
+
+Venez mener vos essais virtuels ici : https://selakant.github.io/appli-poutre/
+
+Et dans 1 an, qu'est-ce qui aura changé ? Vous pourrez expérimenter avec les poutres hyperstatiques !
+
+12/11/2019
