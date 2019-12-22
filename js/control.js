@@ -29,12 +29,12 @@ function set_beam_frame()
 	glob.canvas_width = Math.round( glob.canvas_ratio_width * window_Width );
 	glob.canvas_height = Math.round( glob.canvas_ratio_height * glob.canvas_width );
 
-	$("#canvas_defo").attr({height: glob.canvas_height, width: glob.canvas_width})
-	$("#zone_drop_barre").css({height: glob.canvas_height, width: glob.canvas_width})
-	$("#barre").css({height: glob.defo_epaisseur, width: glob.canvas_width - 2*glob.beam_ends_offset})
-	$("#canvas_effort_N").attr({height: 0.4*glob.canvas_height, width: glob.canvas_width})
-	$("#canvas_effort_T").attr({height: 0.4*glob.canvas_height, width: glob.canvas_width})
-	$("#canvas_effort_M").attr({height: 0.4*glob.canvas_height, width: glob.canvas_width})
+	$("#canvas_defo").attr({width: glob.canvas_width, height: glob.canvas_height})
+	$("#zone_drop_barre").css({width: glob.canvas_width, height: glob.canvas_height})
+	$("#barre").css({width: glob.canvas_width - 2*glob.beam_ends_offset, height: glob.defo_epaisseur})
+	$("#canvas_effort_N").attr({width: glob.canvas_width, height: 0.4*glob.canvas_height})
+	$("#canvas_effort_T").attr({width: glob.canvas_width, height: 0.4*glob.canvas_height})
+	$("#canvas_effort_M").attr({width: glob.canvas_width, height: 0.4*glob.canvas_height})
 
 	// Bords de lignes arrondis
 	var ctx = glob.canvas.getContext("2d"); ctx.lineCap = 'round';
@@ -371,7 +371,7 @@ function traitement_pos_x(elt)
 		console.log("liaison.x    " + (liaison.x) );
 		console.log("pos_x   " + (pos_x) );
 		console.log("==============================");
-		if( Math.abs( liaison.x + glob.beam_ends_offset - pos_x ) < 1.5*glob.snapTol )
+		if( Math.abs( liaison.x + glob.beam_ends_offset - pos_x ) < 2*glob.snapTol )
 		{
 			console.warn("CLIPS !");
 			pos_x = liaison.x + glob.beam_ends_offset; // fonctionne pour les chargements concentrés // TODO à améliorer (brouillon)
