@@ -121,12 +121,12 @@
 
 	<!-- Checkbox pour fixer l'échelle -->
 	<div class="container-fluid">
-		 <label><input type="checkbox" id="checkbox_fixer_echelle" onchange="glob.amplitude_fixee=this.checked;update_defo()"/> Fixer l'échelle</label>
-		 <label><input type="checkbox" id="checkbox_afficher_efforts_liaison" onchange="glob.showLinkingReactions=this.checked;update_defo()"/> Efforts de liaison</label>
-		 <label><input type="checkbox" id="checkbox_afficher_sections" onchange="glob.showSections=this.checked;update_defo()"/> Sections</label>
+		 <label><input type="checkbox" id="checkbox_fixer_echelle" onchange="glob.amplitude_fixee=this.checked;update_defo()"/> Fixer l'échelle </label> 
+		 <label><input type="checkbox" id="checkbox_afficher_efforts_liaison" onchange="glob.showLinkingReactions=this.checked;update_defo()"/> Efforts de liaison </label> 
+		 <label><input type="checkbox" id="checkbox_afficher_sections" onchange="glob.showSections=this.checked;update_defo()"/> Sections </label>
 	</div>
 
-	<canvas id="canvas_effort_N" title="Effort normal (N)" class="frozen">Erreur : ce navigateur ne prend pas en charge <code>canvas</code>.</canvas><br>
+	<canvas id="canvas_effort_N" title="Effort normal (N)" style="display:none;" class="frozen">Erreur : ce navigateur ne prend pas en charge <code>canvas</code>.</canvas><br>
 	<canvas id="canvas_effort_T" title="Effort tranchant (Ty)" class="frozen">Erreur : ce navigateur ne prend pas en charge <code>canvas</code>.</canvas><br>
 	<canvas id="canvas_effort_M" title="Moment de flexion (Mz)" class="frozen">Erreur : ce navigateur ne prend pas en charge <code>canvas</code>.</canvas>
 

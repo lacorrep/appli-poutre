@@ -17,35 +17,17 @@ body {
 	font-size: 10pt;
 }
 
-/* Sur téléphones */
-@media only screen and (max-width: 500px) {
-	body {
-		/* Empêche de scroller */
-		overflow-x: hidden;
-		position: fixed;
-	}
-	h1 {
-		font-size: 190%;
-	}
-	h3 {
-		font-size: 120%;
-		font-weight: bold;
-		margin-bottom: 5px;
 
-		display: none; /* GAGNER DE LA PLACE */
-	}
-	h4 {
-		font-size: 100%;
-		margin-top: 0;
-		margin-bottom: 0.3em;
-	}
-	div#menus p.small {
-		display: none;
-	}
-	div#spacer {
-		height:0.5em;
-	}
-}
+
+
+
+
+
+
+
+
+
+
 
 /* Sélecteurs */
 
@@ -332,4 +314,36 @@ div.col-xs-4
 .ui-resizable-handle.ui-resizable-n
 {
 	height: 10px;
+}
+
+
+
+/* Sur téléphones */
+@media only screen and (max-width: 500px) {
+	body {
+		/* Empêche de scroller */
+		overflow-x: hidden;
+		position: fixed; /* peut-être ce qui pose les problèmes de superposition avec les distributeurs */
+	}
+	h1 {
+		font-size: 190%;
+	}
+	h3 {
+		font-size: 120%;
+		font-weight: bold;
+		margin-bottom: 5px;
+
+		display: none; /* GAGNER DE LA PLACE */
+	}
+	h4 {
+		font-size: 100%;
+		margin-top: 0;
+		margin-bottom: 0.3em;
+	}
+	div#menus p.small {
+		display: none;
+	}
+	div#spacer {
+		height:0.5em;
+	}
 }

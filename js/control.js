@@ -18,7 +18,7 @@ function set_beam_frame()
 	else
 	{
 		// Grand
-		glob.canvas_ratio_width = 0.65;
+		glob.canvas_ratio_width = 0.5;
 		glob.beam_ends_offset = 30;
 		glob.canvas_ratio_height = 0.40;
 		$( "#dialog-info" ).dialog({minWidth: 600});
@@ -313,6 +313,7 @@ function renouveller_interaction()
 	if( isMobile )
 	{	
 		$('.ch_instance').longpress(function(e) {
+			e.preventDefault();
 			var elt = $(e.target);
 			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 			// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
@@ -333,6 +334,7 @@ function renouveller_interaction()
 	{
 		// Double-clic (jQuery standard)
 		$( ".ch_instance" ).dblclick(function(handle) {
+			handle.preventDefault();
 			var elt = $(handle.target);
 			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 			// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)
