@@ -334,7 +334,7 @@ function renouveller_interaction()
 	{
 		// Double-clic (jQuery standard)
 		$( ".ch_instance" ).dblclick(function(handle) {
-			handle.preventDefault();
+			//handle.preventDefault();
 			var elt = $(handle.target);
 			var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 			// Flip the arrow (assigne la classe "flipped" à l'objet s'il ne l'a pas ; et retire la classe si l'objet la possède)

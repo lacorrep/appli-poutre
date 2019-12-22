@@ -38,6 +38,8 @@ body
 
 	font-family: "Arial", "Helvetica", "sans-serif";
 
+	touch-action: manipulation; /* https://stackoverflow.com/questions/10614481/disable-double-tap-zoom-option-in-browser-on-touch-devices */
+
 	background-color: rgb(255,255,255);
 }
 
