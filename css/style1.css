@@ -136,7 +136,7 @@ h1
 	height: 2px;
 }
 
-canvas
+canvas, #zone_drop_barre
 {
 	/* https://stackoverflow.com/questions/5796512/how-to-disable-select-for-html5-canvas-element#15673460 */
 	-webkit-touch-callout: none;
