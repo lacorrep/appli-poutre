@@ -10,37 +10,41 @@ function set_beam_frame()
 	// Si on manque de place, réduire
 	if( window_Width <  1000 ) {
 		// Petit
-		glob.param.canvas_ratio_width = 0.95;
-		glob.param.beam_ends_offset = 8;
-		glob.param.canvas_ratio_height = 0.50;
+		glob.canvas_ratio_width = 0.95;
+		glob.beam_ends_offset = 8;
+		glob.canvas_ratio_height = 0.50;
 		$( "#dialog-info" ).dialog({minWidth: 300});
 	}
 	else
 	{
 		// Grand
-		glob.param.canvas_ratio_width = 0.65;
-		glob.param.beam_ends_offset = 30;
-		glob.param.canvas_ratio_height = 0.40;
+		glob.canvas_ratio_width = 0.65;
+		glob.beam_ends_offset = 30;
+		glob.canvas_ratio_height = 0.40;
 		$( "#dialog-info" ).dialog({minWidth: 600});
 	}
+	$( "#dialog-info" ).dialog("close");
 
 	// Taille du canvas
-	glob.param.canvas_width = Math.round( glob.param.canvas_ratio_width * window_Width );
-	glob.param.canvas_height = Math.round( glob.param.canvas_ratio_height * glob.param.canvas_width );
+	glob.canvas_width = Math.round( glob.canvas_ratio_width * window_Width );
+	glob.canvas_height = Math.round( glob.canvas_ratio_height * glob.canvas_width );
 
-	$("#canvas_defo").attr({height: glob.param.canvas_height, width: glob.param.canvas_width})
-	$("#zone_drop_barre").css({height: glob.param.canvas_height, width: glob.param.canvas_width})
-	$("#barre").css({height: glob.param.defo_epaisseur, width: glob.param.canvas_width - 2*glob.param.beam_ends_offset})
-	$("#canvas_effort_N").attr({height: 0.4*glob.param.canvas_height, width: 0.3*glob.param.canvas_width})
-	$("#canvas_effort_T").attr({height: 0.4*glob.param.canvas_height, width: 0.3*glob.param.canvas_width})
-	$("#canvas_effort_M").attr({height: 0.4*glob.param.canvas_height, width: 0.3*glob.param.canvas_width})
+	$("#canvas_defo").attr({height: glob.canvas_height, width: glob.canvas_width})
+	$("#zone_drop_barre").css({height: glob.canvas_height, width: glob.canvas_width})
+	$("#barre").css({height: glob.defo_epaisseur, width: glob.canvas_width - 2*glob.beam_ends_offset})
+	$("#canvas_effort_N").attr({height: 0.4*glob.canvas_height, width: glob.canvas_width})
+	$("#canvas_effort_T").attr({height: 0.4*glob.canvas_height, width: glob.canvas_width})
+	$("#canvas_effort_M").attr({height: 0.4*glob.canvas_height, width: glob.canvas_width})
 
 	// Bords de lignes arrondis
 	var ctx = glob.canvas.getContext("2d"); ctx.lineCap = 'round';
 }
 
+// Fonction qui gère le redimensionnement de la fenêtre (inutile pour la majorité des utilisateurs)
+// window.addEventListener("resize",set_beam_frame); // ATTENTION ! change la taille du canvas mais pas la position des chargements / CL
 
-// onDomReady
+
+// onDomReady (attendre le chargement des éléments de la page)
 $(function(){
 
 // Objet DOM Canvas
@@ -49,17 +53,8 @@ glob.canvas_effort_N = $("#canvas_effort_N")[0];
 glob.canvas_effort_T = $("#canvas_effort_T")[0];
 glob.canvas_effort_M = $("#canvas_effort_M")[0];
 
-
 // Ajuster les éléments de la page
 set_beam_frame();
-
-// Réagir au redimensionnement de la fenêtre
-// NON : ça oblige à repositioner les Liaison et Chargement.
-// $( window ).resize(function() {
-//   console.log('window resized');
-//   set_beam_frame()
-// });
-
 
 // Pas de sélection du texte dans le titre ou les menus
 $("h1,#menuLiaisons,#menuChargements,label").disableSelection();
@@ -71,22 +66,22 @@ $("ddl").replaceWith('<abbr title="Degré de liberté">ddl</abbr>')
 // Drag & drop Liaisons
 
 $(".cl_distributeur").draggable({ // TODO les objets dragged ne s'affichent pas au-dessus du canvas
-	snap: ".cl_instance, .cl_instance", // s’accroche aux autres CL
-	snapTolerance: glob.param.snapTol,
+	// snap: ".cl_instance, .cl_instance", // s’accroche aux autres CL
+	// snapTolerance: glob.snapTol,
 	revert: true,
 	revertDuration: 100,
-	opacity: glob.param.drag_opacity,
+	opacity: glob.drag_opacity,
 	cursor: "move"
 })
 
 // Drag & drop Chargements
 
 $(".ch_distributeur").draggable({ // TODO les objets dragged ne s'affichent pas au-dessus du canvas
-	snap: ".cl_instance, .ch_instance", // s’accroche aux autres CL
-	snapTolerance: glob.param.snapTol,
+	// snap: ".cl_instance, .ch_instance", // s’accroche aux autres CL
+	// snapTolerance: glob.snapTol,
 	revert: true,
 	revertDuration: 100,
-	opacity: glob.param.drag_opacity,
+	opacity: glob.drag_opacity,
 	cursor: "move"
 })
 
@@ -148,7 +143,7 @@ $("#zone_drop_barre").droppable({
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
 					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
-											  pos_x, glob.param.canvas_height/4);
+											  pos_x, glob.canvas_height/4);
 					break;
 				case "f_r":
 				case "m_r":
@@ -158,8 +153,8 @@ $("#zone_drop_barre").droppable({
 					var eltDOM = $('<span class="ch_instance ch_'+nom_liaison+'" style="left:'+pos_x+'px"></span>')[0];
 					$(this).append(eltDOM);
 					poutre.ajouter_chargement(eltDOM, nom_liaison, "Y",
-											  pos_x, glob.param.canvas_height/4,
-											  pos_x+largeur, glob.param.canvas_height/4);
+											  pos_x, glob.canvas_height/4,
+											  pos_x+largeur, glob.canvas_height/4);
 					break;
 				default:
 					console.error("control.js $(\"#zone_drop_barre\").droppable : Chargement de type inconnu");
@@ -218,7 +213,7 @@ function update_defo()
 		// Redessiner la poutre
 		poutre.dessiner_defo(glob.canvas);
 		// Dessiner les inconnues de liaison
-		if( glob.param.showLinkingReactions ) poutre.dessiner_efforts_liaisons(glob.canvas);
+		if( glob.showLinkingReactions ) poutre.dessiner_efforts_liaisons(glob.canvas);
 		// Canvas avec les efforts internes
 		poutre.dessiner_efforts_internes(glob.canvas_effort_N,"N");
 		poutre.dessiner_efforts_internes(glob.canvas_effort_T,"T");
@@ -226,11 +221,13 @@ function update_defo()
 	}
 	else
 	{
+		// Pas isostatique
 		$("#estIso").html("n'est pas");
 		$("#zone_drop_barre, #canvas_defo").addClass("frozen");
-
-		// Clean canvas
-		// var ctx = glob.canvas.getContext("2d"); ctx.clearRect(0,0, canvas.width,canvas.height);
+		var ctx = glob.canvas.getContext("2d"); ctx.clearRect(0,0, glob.canvas_width,glob.canvas_height);
+		ctx = glob.canvas_effort_N.getContext("2d"); ctx.clearRect(0,0, glob.canvas_width,0.4*glob.canvas_height);
+		ctx = glob.canvas_effort_T.getContext("2d"); ctx.clearRect(0,0, glob.canvas_width,0.4*glob.canvas_height);
+		ctx = glob.canvas_effort_M.getContext("2d"); ctx.clearRect(0,0, glob.canvas_width,0.4*glob.canvas_height);
 	}
 }
 
@@ -239,9 +236,9 @@ function renouveller_interaction()
 {
 	// Drag & drop
 	$(".cl_instance, .ch_instance").draggable({
-		snap: ".cl_instance, .ch_instance", // s'accroche aux autres instances
-		snapTolerance: glob.param.snapTol,
-		opacity: glob.param.drag_opacity,
+		// snap: ".cl_instance, .ch_instance", // s'accroche aux autres instances
+		// snapTolerance: glob.snapTol,
+		opacity: glob.drag_opacity,
 		cursor: "move",
 		stop: function(evt,ui)
 		{
@@ -282,7 +279,7 @@ function renouveller_interaction()
 	$(".ch_f_r, .ch_m_r").resizable({
 		containment: "parent",
 		handles: 'n, e, w', // north : intensité de la force
-		//ghost: true // ne fonctionne pas avec containment:"parent"
+		//ghost: true // incompatible avec containment:"parent"
 		stop: function(evt,ui)
 		{
 			var elt = ui.element;
@@ -325,6 +322,7 @@ function renouveller_interaction()
 			poutre.modifier_chargement(elt[0], "Y", pos_x,
 					downward*elt.height(), pos_x+elt.width()); // TODO changement d'axe ; implémenter/intégrer? les chargement affines
 
+			console.log("TRIGGERED LONG PRESS");
 			update_defo();
 		}, function(e){
 			// short click
@@ -355,13 +353,29 @@ function traitement_pos_x(elt)
 {
 	var pos_x = Math.floor( elt.offset().left - $("#zone_drop_barre").offset().left );
 
-	if( pos_x < glob.param.beam_ends_offset )
+	if( pos_x < glob.beam_ends_offset )
 	{
-		pos_x = glob.param.beam_ends_offset;
+		pos_x = glob.beam_ends_offset;
 	}
-	if( pos_x > glob.param.canvas_width - glob.param.beam_ends_offset )
+	if( pos_x > glob.canvas_width - glob.beam_ends_offset )
 	{
-		pos_x = glob.param.canvas_width - glob.param.beam_ends_offset-3; // TODO le décalage de -3 est arbitraire. dû à la largeur du contour ?
+		pos_x = glob.canvas_width - glob.beam_ends_offset-3; // TODO le décalage de -3 est arbitraire. dû à la largeur du contour ?
+	}
+
+	// Clipser les efforts sur les liaisons
+	// TODO
+
+	for(var liaison of poutre.liaisons.values())
+	{
+		console.log("==============================");
+		console.log("liaison.x    " + (liaison.x) );
+		console.log("pos_x   " + (pos_x) );
+		console.log("==============================");
+		if( Math.abs( liaison.x + glob.beam_ends_offset - pos_x ) < 1.5*glob.snapTol )
+		{
+			console.warn("CLIPS !");
+			pos_x = liaison.x + glob.beam_ends_offset; // fonctionne pour les chargements concentrés // TODO à améliorer (brouillon)
+		}
 	}
 
 	return pos_x;

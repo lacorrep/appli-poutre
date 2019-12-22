@@ -21,7 +21,7 @@ function debugListeDesChargements()
 }
 function debugListeDesLiaisons()
 {
-	for(var liaison of self.liaisons.values())
+	for(var liaison of poutre.liaisons.values())
 	{
 		console.log(liaison);
 		console.log("x " + liaison.x);

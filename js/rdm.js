@@ -7,7 +7,7 @@ function Liaison(objDOM, type, axe, position)
 // axe <String> : "X" ou "Y"
 // position <Number> : position en pixels de la liaison dans la zone de dessin
 {
-	position -= glob.param.beam_ends_offset;
+	position -= glob.beam_ends_offset;
 
 	this.objDOM = objDOM;
 	this.x = position;
@@ -50,8 +50,8 @@ function Chargement(objDOM, type, axe, x0, f0, x1, f1)
 // f1 <Number> optionnel : intensité de la force en x1 // TODO
 {
 	// NB : x0 < x1 car jQuery UI ne le permet pas autrement
-	x0 -= glob.param.beam_ends_offset;
-	x1 -= glob.param.beam_ends_offset;
+	x0 -= glob.beam_ends_offset;
+	x1 -= glob.beam_ends_offset;
 
 	this.objDOM = objDOM;
 	this.type = type;
@@ -118,7 +118,7 @@ function Poutre()
 	self.modifier_liaison = function(objDOM, axe, x)
 	// Déplace une liaison sur la poutre
 	{
-		x -= glob.param.beam_ends_offset;
+		x -= glob.beam_ends_offset;
 		
 		self.liaisons.get( objDOM ).axe = axe;
 		self.liaisons.get( objDOM ).x = x;
@@ -144,8 +144,8 @@ function Poutre()
 	self.modifier_chargement = function(objDOM, axe, x0, f0, x1, f1)
 	// Modifie un chargement de la poutre
 	{
-		x0 -= glob.param.beam_ends_offset;
-		x1 -= glob.param.beam_ends_offset;
+		x0 -= glob.beam_ends_offset;
+		x1 -= glob.beam_ends_offset;
 
 		self.chargements.get( objDOM ).axe = axe;
 		self.chargements.get( objDOM ).x0 = x0;
@@ -153,7 +153,7 @@ function Poutre()
 		self.chargements.get( objDOM ).x1 = x1 || x0;
 		self.chargements.get( objDOM ).f1 = f1 || f0;
 
-		// alert("debug : chargement modifié") // DEBUG
+		// console.log("debug : chargement modifié") // DEBUG
 		// console.log(self.chargements.get(objDOM));
 	}
 
@@ -170,7 +170,7 @@ function Poutre()
 	{
 		console.log(" # ====== UPDATE_DEF ========");
 
-		var nx = canvas.width - 2*glob.param.beam_ends_offset; // nombre de points du domaine
+		var nx = canvas.width - 2*glob.beam_ends_offset; // nombre de points du domaine
 		var Dx = 1/9; // 9 car c'est la largeur en pixels d'une force concentrée. Devient l'unité de longueur par défaut.
 
 		if( !self.isostatique() )
@@ -200,10 +200,10 @@ function Poutre()
 		// Échelles des forces
 		// le calcul n'est pas optimisé pour bien montrer quelles sont les opérations géométriques effectuées.
 		// un bloc de hauteur H/4 correspond à 100% d'une unité sur l'échelle
-		var F_c_scale = 1/(glob.canvas.height/4) * glob.param.force_intensity_scale;
-		var F_r_scale = 1/(glob.canvas.height/4) * glob.param.force_intensity_scale * Dx; 
-		var M_c_scale = 1/(glob.canvas.height/4) * glob.param.moment_intensity_scale;
-		var M_r_scale = 1/(glob.canvas.height/4) * glob.param.moment_intensity_scale * Dx;
+		var F_c_scale = 1/(glob.canvas.height/4) * glob.force_intensity_scale;
+		var F_r_scale = 1/(glob.canvas.height/4) * glob.force_intensity_scale * Dx; 
+		var M_c_scale = 1/(glob.canvas.height/4) * glob.moment_intensity_scale;
+		var M_r_scale = 1/(glob.canvas.height/4) * glob.moment_intensity_scale * Dx;
 
 		// Tableaux des efforts extérieurs appliqués sur chaque noeud
 		// FX(i) est la valeur de la force exercée par l'extérieur sur le point numéro i de la poutre
@@ -446,18 +446,18 @@ function Poutre()
 
 		// Style du trait et dessin
 		ctx.strokeStyle = "black";
-		ctx.lineWidth = glob.param.defo_epaisseur;
+		ctx.lineWidth = glob.defo_epaisseur;
 
 		// Amplitudes
-		if( glob.param.amplitude_fixee )
+		if( glob.amplitude_fixee )
 		{
-			var amp_u = glob.param.amp_u;
-			var amp_v = glob.param.amp_v;
+			var amp_u = glob.amp_u;
+			var amp_v = glob.amp_v;
 		}
 		else
 		{
-			var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * glob.param.amp_max_defo; // TODO selon la marge
-			var amp_v = 1 / self.v.abs().max() * H/2 * glob.param.amp_max_defo;
+			var amp_u = 0.01; // 1 / self.u.abs().max() * W/2 * glob.amp_max_defo; // TODO selon la marge
+			var amp_v = 1 / self.v.abs().max() * H/2 * glob.amp_max_defo;
 			if( !isFinite(amp_v) ) amp_v = 0; // dessiner une poutre plate si l'ampitude est infinie
 			// Limiteur d'échelle
 			amp_v = Math.min(amp_v,3e3); // TODO limite arbitraire
@@ -465,19 +465,43 @@ function Poutre()
 			console.log("amp_v " + amp_v);
 
 			// Mise à jour de l'objet global
-			glob.param.amp_u = amp_u;
-			glob.param.amp_v = amp_v;
+			glob.amp_u = amp_u;
+			glob.amp_v = amp_v;
 		}
 
 		// Définition du tracé
-		ctx.beginPath()
-		ctx.moveTo(glob.param.beam_ends_offset + self.u[0] * amp_u, H/2 - self.v[0] * amp_v);
+		ctx.beginPath();
+		ctx.moveTo(glob.beam_ends_offset + self.u[0] * amp_u, H/2 - self.v[0] * amp_v);
 		for (var i = 1; i < self.v.length; i++) {
-			ctx.lineTo(glob.param.beam_ends_offset + i + self.u[i] * amp_u, H/2 - self.v[i] * amp_v );
+			ctx.lineTo(glob.beam_ends_offset + i + self.u[i] * amp_u, H/2 - self.v[i] * amp_v );
 		};
 
 		// Dessin
 		ctx.stroke();
+
+		// Dessin des sections
+		if( glob.showSections )
+		{
+			ctx.lineWidth = glob.defo_epaisseur/2;
+			ctx.strokeStyle = "rgba(150,150,255,0.8)";
+			for (var j = 0; j < glob.number_of_sections; j++ )
+			{
+				var i = Math.floor( j * (glob.canvas_width-2*glob.beam_ends_offset)/(glob.number_of_sections-1) );
+				if( i > self.u.length-2 ) i = self.u.length-2;
+				var x = glob.beam_ends_offset + self.u[i] * amp_u + i;
+				var y = H/2 - self.v[i] * amp_v;
+
+				// Calcul de l'angle
+				// On ne peut pas utiliser self.theta car le coefficient matériau EI n'a pas de sens (je crois que c'est ça)
+				var angle = Math.atan2( (H/2 - self.v[i+1] * amp_v) - (H/2 - self.v[i] * amp_v) ,
+							(glob.beam_ends_offset + self.u[i+1] * amp_u + i+1) - (glob.beam_ends_offset + self.u[i] * amp_u + i));
+
+				ctx.beginPath();
+				ctx.moveTo(x + glob.section_lowest_y*Math.sin(angle),  y - glob.section_lowest_y*Math.cos(angle) );
+				ctx.lineTo(x + glob.section_highest_y*Math.sin(angle), y - glob.section_highest_y*Math.cos(angle) );
+				ctx.stroke();
+			}
+		}
 	}
 
 	self.dessiner_efforts_internes = function(canvas,type)
@@ -492,28 +516,28 @@ function Poutre()
 		{
 			case "N":
 				var effort = self.effort_N;
-				var amp_fixee = glob.param.amp_N;
+				var amp_fixee = glob.amp_N;
 				break;
 			case "T":
 				var effort = self.effort_T;
-				var amp_fixee = glob.param.amp_T;
+				var amp_fixee = glob.amp_T;
 				break;
 			case "M":
 				var effort = self.effort_M;
-				var amp_fixee = glob.param.amp_M;
+				var amp_fixee = glob.amp_M;
 				break;
 			default:
-				console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort)")
+				console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (1)")
 		}
 
 		// Amplitudes
-		if( glob.param.amplitude_fixee )
+		if( glob.amplitude_fixee )
 		{
 			var amp = amp_fixee;
 		}
 		else
 		{
-			var amp = 1 / effort.abs().max() * H/2 * glob.param.amp_max_effort;
+			var amp = 1 / effort.abs().max() * H/2 * glob.amp_max_effort;
 			if( !isFinite(amp) ) amp = 0; // dessiner une poutre plate si l'ampitude est infinie
 			// Limiteur d'échelle
 			amp = Math.min(amp,3e3); // TODO limite arbitraire
@@ -524,13 +548,13 @@ function Poutre()
 			switch(type)
 			{
 				case "N":
-					glob.param.amp_N = amp;
+					glob.amp_N = amp;
 					break;
 				case "T":
-					glob.param.amp_T = amp;
+					glob.amp_T = amp;
 					break;
 				case "M":
-					glob.param.amp_M = amp;
+					glob.amp_M = amp;
 					break;
 				default:
 					console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (2)")
@@ -539,9 +563,9 @@ function Poutre()
 
 		// Définition du tracé
 		ctx.beginPath()
-		ctx.moveTo(glob.param.beam_ends_offset/(glob.canvas.width/canvas.width), H/2 - effort[0] * amp);
+		ctx.moveTo(glob.beam_ends_offset/(glob.canvas.width/canvas.width), H/2 - effort[0] * amp);
 		for (var i = 1; i < effort.length; i++) {
-			ctx.lineTo((glob.param.beam_ends_offset + i)/(glob.canvas.width/canvas.width), H/2 - effort[i] * amp );
+			ctx.lineTo((glob.beam_ends_offset + i)/(glob.canvas.width/canvas.width), H/2 - effort[i] * amp );
 		};
 
 		// Style du trait et dessin
@@ -560,9 +584,9 @@ function Poutre()
 				console.error("Type d'effort non reconnu (rdm.js : Poutre.dessin_effort) (3)")
 		}
 		
-		ctx.lineWidth = glob.param.defo_epaisseur;
+		ctx.lineWidth = glob.defo_epaisseur;
 
-		// Dessin
+		// Tracer
 		ctx.stroke();
 	}
 
@@ -576,23 +600,23 @@ function Poutre()
 		
 		ctx.strokeStyle = "rgba(255,0,255,0.3)";
 
-		var amp_force = (glob.canvas.height/4) / glob.param.force_intensity_scale;
-		var amp_moments = (glob.canvas.height/4) / glob.param.moment_intensity_scale / 5;
+		var amp_force = (glob.canvas.height/4) / glob.force_intensity_scale;
+		var amp_moments = (glob.canvas.height/4) / glob.moment_intensity_scale / 5;
 
 		for(var i = 0; i <= 1; i++)
 		{
-			var X = glob.param.beam_ends_offset + self.x_R_flex[i];
+			var X = glob.beam_ends_offset + self.x_R_flex[i];
 			if(self.type_R_flex[i] === "force")
 			{
 				var intensite = amp_force*self.reactions[i];
 				if( Math.abs(intensite) > 0.9*glob.canvas.height/2 )
 				{
-					ctx.lineWidth = glob.param.defo_epaisseur*(1+2*Math.log( Math.abs(intensite)/(0.9*glob.canvas.height/2) ) );
+					ctx.lineWidth = glob.defo_epaisseur*(1+2*Math.log( Math.abs(intensite)/(0.9*glob.canvas.height/2) ) );
 					intensite = Math.sign(intensite)*0.9*glob.canvas.height/2;
 				}
 				else
 				{
-					ctx.lineWidth = glob.param.defo_epaisseur;
+					ctx.lineWidth = glob.defo_epaisseur;
 				}
 				ctx.beginPath();
 				canvas_arrow(ctx, X,H/2, X,H/2-intensite); // longueur de la flèche 0.6*Math.abs(self.reactions[i])
@@ -604,12 +628,12 @@ function Poutre()
 				var rayon = Math.abs(amp_moments*self.reactions[i]);
 				if( rayon > 0.9*glob.canvas.height/2 )
 				{
-					ctx.lineWidth = glob.param.defo_epaisseur*(1+2*Math.log( rayon/(0.9*glob.canvas.height/2) ) );
+					ctx.lineWidth = glob.defo_epaisseur*(1+2*Math.log( rayon/(0.9*glob.canvas.height/2) ) );
 					rayon = 0.9*glob.canvas.height/2;
 				}
 				else
 				{
-					ctx.lineWidth = glob.param.defo_epaisseur;
+					ctx.lineWidth = glob.defo_epaisseur;
 				}
 				ctx.beginPath();
 				if( self.reactions[i] <= 0 )
@@ -626,7 +650,7 @@ function Poutre()
 			}
 			else
 			{
-				console.log("DEBUG (rdm.js : Poutre.dessiner_efforts_liaisons) type d'effort inconnu : "
+				console.warn("DEBUG (rdm.js : Poutre.dessiner_efforts_liaisons) type d'effort inconnu : "
 					+ self.type_R_flex[i] + " (se produit lorsqu'il n'y a pas encore de forces)")
 			}
 

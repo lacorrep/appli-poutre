@@ -3,8 +3,8 @@
 * Agrandir les images des liaisons.
 * Liaisons appui et pivot : c'est la même chose ! Il faut dessiner des roulettes
 * Le double-clic doit inverser le sens de l'effort.
-* `resizable` : appliquer `glob.param.resize_minWidth`
-* Appliquer `glob.param.resizeTol` au CSS de jQueryUI `.ui-resizable-handle.ui-resizable-n`
+* `resizable` : appliquer `glob.resize_minWidth`
+* Appliquer `glob.resizeTol` au CSS de jQueryUI `.ui-resizable-handle.ui-resizable-n`
 ## `rdm.js`
 * Gérer les positions `x`, `x0`, `x1` en pixels correctement (offset avec le bord) !!!
 * L'attribut `objDOM` des `Liaison` et `Chargement` n'est pas nécessaire, les données de l'interface sont lues mais jamais écrites (pas de contrôle de la vue par `rdm.js`)
