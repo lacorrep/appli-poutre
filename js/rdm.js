@@ -302,6 +302,10 @@ function Poutre()
 		}
 		// On connaît tous les efforts de flexion : résolution
 		var detM = C[0][0]*C[1][1] - C[1][0]*C[0][1]; // OK
+		if( Math.abs(detM) < 1e-5 ) {
+			alert("PFS : déterminant nul ! ")
+			return
+		}
 		var R1 = ( F_ext[2]*C[0][1] - F_ext[1]*C[1][1] ) / detM;
 		var R2 = ( F_ext[1]*C[1][0] - F_ext[2]*C[0][0] ) / detM;
 		// R1 est de type type_R_flex[0], R2 est de type type_R_flex[1]

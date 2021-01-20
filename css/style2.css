@@ -1,0 +1,424 @@
+/* Paul Lacorre */
+/* Updated on November 30, 2020 */
+
+/* Variables CSS */
+
+:root
+{
+	/*--one-bg-color: rgb(50,70,105);*/
+	--one-text-color: rgb(255,255,255);
+
+	/*--two-bg-color: rgb(200,203,220);*/
+	/*--two-text-color: rgb(0,0,0);*/
+
+	/*--three-bg-color: rgb(230,230,240);*/
+	/*--three-text-color: rgb(0,0,0);*/
+
+
+	/* V2 30/11/2020 */
+
+	--two-bg-color: #5D96E0;
+	--two-text-color: #fff;
+
+	--three-bg-color: #F1F7FF;
+	--three-text-color: rgb(0,0,0);
+}
+
+/* Responsive */
+body {
+	font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Sélecteurs */
+
+body
+{
+	text-align: center;
+	cursor: default;
+
+	font-family: "Arial Light", "Arial", "Helvetica", "sans-serif";
+
+	touch-action: manipulation; /* https://stackoverflow.com/questions/10614481/disable-double-tap-zoom-option-in-browser-on-touch-devices */
+	/* pas d'effet. Redondant avec user-scalable=no */
+
+	background-color: rgb(255,255,255);
+}
+
+a
+{
+	text-decoration: underline;
+}
+
+h1
+{
+	/*background-color: var(--one-bg-color);*/
+	background: rgb(57,126,215);
+	background: linear-gradient(114deg, rgba(145,131,228,1) 0%, rgba(57,126,215,1) 35%, rgba(77,171,238,1) 100%); 
+	margin: 0;
+	padding: 0.4em 1em;
+	color: var(--one-text-color);
+
+	text-align: left;
+	font-size: 2.3em;
+}
+
+
+#menus
+{
+	background-color: var(--three-bg-color);
+	color: var(--three-text-color);
+	overflow: hidden;
+	margin: 0;
+}
+
+#menus h3
+{
+	margin: 0;
+	padding: 5px;
+	background-color: var(--two-bg-color);
+	color: var(--two-text-color);
+
+	font-size: 1.5em;
+}
+
+#menus h4
+{
+	margin: 5px 0;
+}
+
+#menuLiaisons,#menuChargements
+{
+	padding:0;
+}
+
+#menus div.row
+{
+	padding-top: 10px;
+	margin-right: 0;
+}
+#menuLiaisons > div.row
+{
+	border-right: 4px solid #fff; /*var(--two-bg-color)*/
+}
+
+#menuChargements .col-xs-3
+{
+	width: 23%;
+}
+#menuChargements > div.row div:first-child
+{
+	margin-left: 4%;
+}
+
+#zone_drop_barre, #canvas_defo
+{
+	box-sizing: content-box;
+	border: solid #737373 2px;
+}
+
+#zone_drop_barre.frozen, #canvas_defo.frozen
+{
+	/* Lorsque la poutre n'est pas isostatique, le bord de la zone de dessin s'affiche en rouge. */
+	border-color: rgb(255,120,120);
+}
+
+#zone_drop_barre, #barre, #canvas_defo
+{
+	/* Centrage */
+	/* TODO ne marchera pas dans Internet Explorer */
+	left: 0; right: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#zone_drop_barre
+{
+	position: absolute;
+
+	z-index: 10;
+
+	line-height: 0; font-size: 0;
+
+	/*background-color: white;*/
+	border-bottom: 0px; /* permet une juxtaposition des cadres plus propre : pas de trait double épaisseur */
+}
+
+#barre
+{
+	position: absolute;
+	display: inline-block;
+
+	top: 50%;
+
+	background-color: black;
+	opacity: 0.1;
+	height: 2px;
+}
+
+canvas, #zone_drop_barre
+{
+	/* https://stackoverflow.com/questions/5796512/how-to-disable-select-for-html5-canvas-element#15673460 */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	outline: none;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+
+#canvas_defo
+{
+	position: relative;
+
+	z-index: 5;
+	
+	pointer-events: none; /* jamais d'interaction avec le curseur (pas de clic) */
+
+	background-color: white;
+
+	border-radius: 4px;
+}
+
+#canvas_effort_N, #canvas_effort_T, #canvas_effort_M
+{
+	/*box-sizing: content-box;*/
+	border: solid #b0b0b0 2px;
+
+	border-radius: 3px;
+
+	pointer-events: none; /* jamais d'interaction avec le curseur (pas de clic) */
+
+	background-color: white;
+}
+/*
+#bt-info-container
+{
+	position: fixed;
+	top: 5px;
+	right: 5px;
+}*/
+
+#display-options label
+{
+	margin-right: 6px;
+}
+
+
+/* ================= Liaisons ================= */
+
+.cl_distributeur, .cl_instance
+{
+	/*background-color: gray; */
+	display: inline-block;
+
+	cursor: move;
+}
+
+.cl_instance
+{
+	position: absolute;
+	top: 50%; /* au milieu de l'élément parent ? */
+}
+
+
+
+#cl_distri_appui, .cl_appui
+{
+	/*background-color: red;*/
+	background: url("../img/cl_appui.png") no-repeat;
+	width: 17px;
+	height: 23px;
+}
+
+#cl_distri_pivot, .cl_pivot
+{
+	/*background-color: green;*/
+	background: url("../img/cl_pivot.png") no-repeat;
+	width: 17px;
+	height: 16px;
+}
+
+#cl_distri_encastrement, .cl_encastrement
+{
+	/*background-color: blue;*/
+	background: url("../img/cl_encastrement.png") no-repeat;
+}
+
+/* Décalage */
+.cl_appui
+{
+	transform: translateX(-8px);
+}
+
+.cl_pivot
+{
+	transform: translateX(-8px);
+}
+
+.cl_encastrement
+{
+	transform: translate(-5px, -10px);
+}
+
+
+/* ================= Chargements ================= */
+
+.ch_distributeur, .ch_instance
+{
+	background-color: gray;
+	display: inline-block;
+
+	background-position: left top, left top;
+	background-repeat: no-repeat, repeat-y;
+
+	width: 9px;
+	height: 40px;
+
+	cursor: move;
+}
+
+.ch_instance
+{
+	position: absolute;
+	bottom: 50%;
+	height: 25%;
+}
+
+
+.ch_f_c, .ch_m_c
+{
+	transform: translateX(-4.5px);
+	transform-origin: 2.5px;
+}
+
+#ch_distri_f_c, .ch_f_c
+{
+	background-color: rgba(255,255,0,0.5);
+}
+
+#ch_distri_f_r, .ch_f_r
+{
+	width: 18px;
+	background-color: rgba(255,128,128,0.5);
+	background-repeat: repeat-x, repeat;
+}
+
+#ch_distri_m_c, .ch_m_c
+{
+	background-color: rgba(128,0,255,0.5);
+}
+
+#ch_distri_m_r, .ch_m_r
+{
+	width: 18px;
+	background-color: rgba(0,255,0,0.5);
+	background-repeat: repeat-x, repeat; /* repeat-x for the head, repeat for the line */
+}
+
+/* Forces */
+#ch_distri_f_c, .ch_f_c,
+#ch_distri_f_r, .ch_f_r
+{
+	background-image: url(../img/arrow_head_up.png) , url(../img/arrow_body.png);
+}
+
+/* Moments */
+#ch_distri_m_c, .ch_m_c,
+#ch_distri_m_r, .ch_m_r
+{
+	background-image: url(../img/arrow_moment.png);
+	background-repeat: repeat;
+}
+
+.ch_f_c.flipped,
+.ch_f_r.flipped
+{
+	/*-webkit-transform: rotate(-180deg);*/
+	/*-moz-transform: rotate(-180deg);*/
+	/*-ms-transform: rotate(-180deg);*/
+	/*transform: rotate(-180deg);*/
+
+	background-image: url(../img/arrow_head_down.png) , url(../img/arrow_body.png);
+	/*background-attachment: fixed;*/
+	background-position: left bottom;
+}
+
+.ch_m_c.flipped,
+.ch_m_r.flipped
+{
+	background-image: url(../img/arrow_moment_negative.png);
+}
+
+
+
+
+/* Classes Bootstrap */
+
+div.col-xs-4
+{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/* Classes jQueryUI */
+
+.ui-resizable-handle.ui-resizable-e, .ui-resizable-handle.ui-resizable-w
+{
+	width: 10px;
+}
+
+.ui-resizable-handle.ui-resizable-n
+{
+	height: 10px;
+}
+
+
+
+/* Sur téléphones */
+@media only screen and (max-width: 500px) {
+	body {
+		/* Empêche de scroller */
+		overflow-x: hidden;
+		position: fixed; /* peut-être ce qui pose les problèmes de superposition avec les distributeurs */
+	}
+	h1 {
+		font-size: 190%;
+	}
+	h3 {
+		font-size: 120%;
+		font-weight: bold;
+		margin-bottom: 5px;
+
+		display: none; /* GAGNER DE LA PLACE */
+	}
+	h4 {
+		font-size: 100%;
+		margin-top: 0;
+		margin-bottom: 0.3em;
+	}
+	#menuLiaisons > div.row
+	{
+		border-right: none;
+	}
+	div#menus p.small {
+		display: none;
+	}
+	div.spacer {
+		height:0.5em;
+	}
+}
