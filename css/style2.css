@@ -257,6 +257,8 @@ canvas, #zone_drop_barre
 {
 	/*background-color: blue;*/
 	background: url("../img/cl_encastrement.png") no-repeat;
+	width: 5px;
+	height: 20px;
 }
 
 /* Décalage */
