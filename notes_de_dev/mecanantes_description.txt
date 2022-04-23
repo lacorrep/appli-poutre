@@ -4,8 +4,8 @@ Par un simple cliquer-glisser, déposez les liaisons et les chargements sur la po
 
 L'application est également conçue pour une utilisation sur mobile et tablettes.
 
-Venez mener vos essais virtuels ici : https://selakant.github.io/appli-poutre/
+Venez mener vos essais virtuels ici : https://lacorrep.github.io/appli-poutre/
 
 Et dans 1 an, qu'est-ce qui aura changé ? Vous pourrez expérimenter avec les poutres hyperstatiques !
 
-12/11/2019
+12/11/2019 (modifié le 24/04/2022)
